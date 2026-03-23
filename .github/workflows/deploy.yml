@@ -78,3 +78,6 @@ jobs:
           echo "Site: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com"
           echo "Admin: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/admin"
           echo "Commit: ${{ github.sha }}"
+
+
+#test           
