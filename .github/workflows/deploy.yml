@@ -1,14 +1,30 @@
-- name: Pull latest code on PythonAnywhere
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: ssh.pythonanywhere.com
-    username: ${{ secrets.PA_USERNAME }}
-    key: ${{ secrets.PA_SSH_KEY }}
-    port: 22
-    timeout: 60s
-    script: |
-      eval "$(ssh-agent -s)"
-      ssh-add ~/.ssh/id_rsa
-      cd ~/nosherwanwebsite
-      git pull origin main
-      echo "Code updated successfully"
+name: Deploy to PythonAnywhere
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull latest code on PythonAnywhere
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ssh.pythonanywhere.com
+          username: ${{ secrets.PA_USERNAME }}
+          key: ${{ secrets.PA_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          script: |
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/id_rsa
+            cd ~/nosherwanwebsite
+            git pull origin main
+            echo "Code updated successfully"
