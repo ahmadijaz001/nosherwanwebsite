@@ -29,29 +29,18 @@ jobs:
           port: 22
           timeout: 60s
           script: |
-            set -e
-            echo "=== Navigating to project ==="
             cd ~/nosherwanwebsite
-
-            echo "=== Pulling latest code ==="
             git fetch origin
             git reset --hard origin/main
-
-            echo "=== Installing dependencies ==="
-            ~/nosherwanwebsite/venv/bin/pip install -q -r requirements.txt
-
-            echo "=== Done ==="
+            echo "Code updated successfully"
 
       - name: Reload PythonAnywhere web app
         run: |
-          echo "Reloading web app..."
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST \
             -H "Authorization: Token ${{ secrets.PA_API_TOKEN }}" \
             "https://www.pythonanywhere.com/api/v0/user/${{ secrets.PA_USERNAME }}/webapps/${{ secrets.PA_USERNAME }}.pythonanywhere.com/reload/")
-
-          echo "API response code: $RESPONSE"
-
+          echo "API response: $RESPONSE"
           if [ "$RESPONSE" = "200" ]; then
             echo "Web app reloaded successfully"
           else
@@ -64,9 +53,9 @@ jobs:
           sleep 8
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/api/cars")
-          echo "Health check status: $STATUS"
+          echo "Health check: $STATUS"
           if [ "$STATUS" = "200" ]; then
-            echo "Site is live and healthy"
+            echo "Site is live"
           else
             echo "Warning: site returned $STATUS"
           fi
@@ -77,7 +66,3 @@ jobs:
           echo "Deployment complete"
           echo "Site: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com"
           echo "Admin: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/admin"
-          echo "Commit: ${{ github.sha }}"
-
-
-#test           
