@@ -7,7 +7,8 @@
     port: 22
     timeout: 60s
     script: |
+      eval "$(ssh-agent -s)"
+      ssh-add ~/.ssh/id_rsa
       cd ~/nosherwanwebsite
-      git fetch origin
-      git reset --hard origin/main
+      git pull origin main
       echo "Code updated successfully"
