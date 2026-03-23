@@ -1,58 +1,47 @@
-# ─────────────────────────────────────────────────────────────
-#  PrestigeMotors UK — GitHub Actions CI/CD Pipeline
-#  Trigger: every push to `main` branch
-#
-#  What it does:
-#    1. Checks out the latest code
-#    2. SSHes into PythonAnywhere
-#    3. Pulls the latest code from GitHub
-#    4. Installs/updates Python dependencies
-#    5. Reloads the live web app via PythonAnywhere API
-# ─────────────────────────────────────────────────────────────
 name: Deploy to PythonAnywhere
 
 on:
   push:
     branches:
-      - main          # fires on every push / merged PR to main
-  workflow_dispatch:  # also allows manual trigger from GitHub UI
+      - main
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
-    name: Deploy → PythonAnywhere
+    name: Deploy to PythonAnywhere
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
 
-      # ── 1. Checkout code ──────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. SSH into PythonAnywhere & pull latest code ─────
       - name: Pull latest code on PythonAnywhere
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ssh.pythonanywhere.com
           username: ${{ secrets.PA_USERNAME }}
-          password: ${{ secrets.PA_PASSWORD }}
+          key: ${{ secrets.PA_SSH_KEY }}
           port: 22
           timeout: 60s
           script: |
             set -e
-            echo "=== Pulling latest code ==="
+            echo "=== Navigating to project ==="
             cd ~/nosherwanwebsite
 
-            # Pull from GitHub (main branch)
+            echo "=== Pulling latest code ==="
             git fetch origin
             git reset --hard origin/main
 
-            echo "=== Installing/updating dependencies ==="
-            pip install --user -q flask flask-cors PyJWT gunicorn
+            echo "=== Installing dependencies ==="
+            ~/nosherwanwebsite/venv/bin/pip install -q -r requirements.txt
 
-            echo "=== Done — will reload via API next step ==="
+            echo "=== Done ==="
 
-      # ── 3. Reload the live web app via PythonAnywhere API ──
       - name: Reload PythonAnywhere web app
         run: |
           echo "Reloading web app..."
@@ -61,36 +50,31 @@ jobs:
             -H "Authorization: Token ${{ secrets.PA_API_TOKEN }}" \
             "https://www.pythonanywhere.com/api/v0/user/${{ secrets.PA_USERNAME }}/webapps/${{ secrets.PA_USERNAME }}.pythonanywhere.com/reload/")
 
-          echo "PythonAnywhere API response: $RESPONSE"
+          echo "API response code: $RESPONSE"
 
           if [ "$RESPONSE" = "200" ]; then
-            echo "✅ Web app reloaded successfully!"
+            echo "Web app reloaded successfully"
           else
-            echo "❌ Reload failed with status $RESPONSE"
+            echo "Reload failed with status $RESPONSE"
             exit 1
           fi
 
-      # ── 4. Verify the site is up ──────────────────────────
-      - name: Health check — verify site is live
+      - name: Health check
         run: |
-          sleep 5
+          sleep 8
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/api/cars")
-
-          echo "Site health check: $STATUS"
-
+          echo "Health check status: $STATUS"
           if [ "$STATUS" = "200" ]; then
-            echo "✅ Site is live and healthy!"
+            echo "Site is live and healthy"
           else
-            echo "⚠️  Site returned status $STATUS (may still be starting up)"
+            echo "Warning: site returned $STATUS"
           fi
 
-      # ── 5. Post success summary ───────────────────────────
-      - name: Deployment summary
+      - name: Summary
         if: success()
         run: |
-          echo "🚀 Deployment complete!"
-          echo "🌐 Public site: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com"
-          echo "🔧 Admin panel: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/admin"
-          echo "📦 Commit: ${{ github.sha }}"
-          echo "👤 Deployed by: ${{ github.actor }}"
+          echo "Deployment complete"
+          echo "Site: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com"
+          echo "Admin: https://${{ secrets.PA_USERNAME }}.pythonanywhere.com/admin"
+          echo "Commit: ${{ github.sha }}"
