@@ -24,7 +24,7 @@ jobs:
           upload() {
             local file=$1
             echo "Uploading $file ..."
-            STATUS=$(curl -s -o response.txt -w "%{http_code}" -X PUT \
+            STATUS=$(curl -s -o response.txt -w "%{http_code}" -X POST \
               -H "Authorization: Token ${PA_TOKEN}" \
               -F "content=@${file}" \
               "${BASE}/${file}")
