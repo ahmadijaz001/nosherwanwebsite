@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp:*)",
+      "Bash(cmd //c \"curl -s -o nul -w \"\"%{http_code}\"\" http://localhost:5000\")",
+      "Bash(cmd //c \"start http://localhost:5000\")"
+    ]
+  }
+}

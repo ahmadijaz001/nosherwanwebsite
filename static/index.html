@@ -6,317 +6,518 @@
 <title>PrestigeMotors UK — Premium Pre-Owned Vehicles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 <style>
-:root{--black:#080808;--deep:#0e0e0e;--card:#131313;--border:#1f1f1f;--gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:rgba(201,168,76,0.13);--white:#f5f3ef;--muted:#888;--text:#d4d0c8;--red:#c0392b;--green:#2ecc71}
+/* ─── TOKENS ──────────────────────────────────────────────────────── */
+:root{
+  --black:#000;--deep:#080808;--surface:#0e0e0e;--card:#111;--card2:#161616;
+  --border:rgba(255,255,255,.06);--border2:rgba(201,168,76,.18);
+  --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:rgba(201,168,76,.08);
+  --gold-glow:rgba(201,168,76,.25);--white:#f5f3ef;--muted:#888;--text:#ccc;
+  --green:#2ecc71;--red:#e74c3c;
+  --font-serif:'Cormorant Garamond',serif;--font-sans:'Outfit',sans-serif;
+  --ease-luxury:cubic-bezier(.16,1,.3,1);
+  --alert-h:36px;--nav-h:68px;--header-h:104px;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300;overflow-x:hidden}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--black);color:var(--text);font-family:var(--font-sans);font-weight:300;overflow-x:hidden;cursor:none}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--black)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+button{font-family:var(--font-sans);cursor:none}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:72px;background:rgba(8,8,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
-.nav-logo .logo-text{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;letter-spacing:.08em;color:var(--white)}
-.nav-logo .logo-text span{color:var(--gold)}
-.nav-logo{display:flex;align-items:center;gap:10px}
-.logo-badge{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:2px 8px;border-radius:2px}
+/* ─── PAGE LOADER ─────────────────────────────────────────────────── */
+#pageLoader{
+  position:fixed;inset:0;z-index:99999;background:var(--black);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  transition:opacity .6s var(--ease-luxury),visibility .6s;
+}
+#pageLoader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-logo{
+  font-family:var(--font-serif);font-size:2rem;font-weight:300;
+  letter-spacing:.12em;color:var(--white)
+}
+.loader-logo span{color:var(--gold)}
+.loader-bar{width:180px;height:1px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden}
+.loader-fill{height:100%;width:0;background:var(--gold);border-radius:1px;animation:loaderFill 1.6s var(--ease-luxury) forwards}
+@keyframes loaderFill{to{width:100%}}
+
+/* ─── CUSTOM CURSOR ───────────────────────────────────────────────── */
+#cursor{
+  position:fixed;top:0;left:0;width:8px;height:8px;background:var(--gold);
+  border-radius:50%;pointer-events:none;z-index:99998;
+  transform:translate(-50%,-50%);transition:transform .1s,width .3s,height .3s,background .3s;
+}
+#cursorRing{
+  position:fixed;top:0;left:0;width:32px;height:32px;
+  border:1px solid rgba(201,168,76,.5);border-radius:50%;pointer-events:none;z-index:99997;
+  transform:translate(-50%,-50%);transition:transform .18s var(--ease-luxury),width .3s,height .3s,border-color .3s;
+}
+body:has(a:hover) #cursor,body:has(button:hover) #cursor{width:14px;height:14px;background:var(--gold-light)}
+body:has(a:hover) #cursorRing,body:has(button:hover) #cursorRing{width:44px;height:44px;border-color:var(--gold)}
+
+/* ─── NAV ─────────────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:var(--alert-h);left:0;right:0;z-index:1001;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;height:var(--nav-h);
+  background:rgba(0,0,0,.82);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:background .4s,border-color .4s;
+}
+nav.scrolled{background:rgba(0,0,0,.96);border-color:rgba(201,168,76,.15)}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.logo-text{font-family:var(--font-serif);font-size:1.45rem;font-weight:300;letter-spacing:.08em;color:var(--white)}
+.logo-text span{color:var(--gold)}
+.logo-pill{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:3px 9px;border-radius:2px}
 .nav-links{display:flex;gap:2.5rem;list-style:none}
-.nav-links a{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:color .2s;position:relative}
-.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s}
-.nav-links a:hover{color:var(--white)}.nav-links a:hover::after{transform:scaleX(1)}
+.nav-links a{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);position:relative;transition:color .25s}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .28s var(--ease-luxury)}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{transform:scaleX(1)}
 .nav-cta{display:flex;gap:1rem;align-items:center}
-.btn-outline{border:1px solid var(--gold);color:var(--gold);padding:8px 20px;font-family:'Outfit',sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:transparent;transition:all .25s;border-radius:2px}
-.btn-outline:hover{background:var(--gold);color:var(--black)}
-.btn-gold{background:var(--gold);color:var(--black);padding:9px 24px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:none;transition:all .25s;border-radius:2px}
-.btn-gold:hover{background:var(--gold-light);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--gold);padding:8px 20px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;border-radius:2px;transition:all .25s}
+.btn-ghost:hover{background:var(--gold);color:var(--black)}
+.btn-gold{background:var(--gold);color:var(--black);padding:9px 22px;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border:none;border-radius:2px;transition:all .25s;position:relative;overflow:hidden}
+.btn-gold::after{content:'';position:absolute;inset:0;background:var(--gold-light);transform:scaleX(0);transform-origin:left;transition:transform .28s var(--ease-luxury);z-index:0}
+.btn-gold span{position:relative;z-index:1}
+.btn-gold:hover::after{transform:scaleX(1)}
 
-/* ALERT BAR */
-.alert-bar{background:var(--gold);color:var(--black);text-align:center;padding:8px;font-size:.75rem;font-weight:500;letter-spacing:.05em}
-.alert-bar a{color:var(--black);font-weight:600;text-decoration:underline}
+/* ─── ALERT BAR ───────────────────────────────────────────────────── */
+.alert-bar{
+  position:fixed;top:0;left:0;right:0;z-index:1002;
+  height:var(--alert-h);
+  background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));
+  background-size:200%;animation:shimmerBar 4s linear infinite;
+  color:var(--black);text-align:center;padding:0 12px;
+  font-size:.7rem;font-weight:500;letter-spacing:.05em;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+@keyframes shimmerBar{0%{background-position:0%}100%{background-position:200%}}
+.alert-bar a{color:var(--black);font-weight:700;text-decoration:underline}
 
-/* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:72px}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 50%,rgba(201,168,76,.04) 0,transparent 70%),radial-gradient(ellipse 40% 40% at 80% 80%,rgba(201,168,76,.03) 0,transparent 60%),linear-gradient(135deg,#080808 0,#0f0e0b 100%)}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(201,168,76,.04) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 40%,transparent 100%)}
-.hero-content{position:relative;z-index:2;padding:0 5%;max-width:700px}
-.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:2rem}
-.hero-eyebrow .line{width:40px;height:1px;background:var(--gold)}
-.hero-eyebrow span{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
-.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3.2rem,6vw,5.5rem);font-weight:300;line-height:1.05;color:var(--white);margin-bottom:1.5rem}
-.hero h1 em{font-style:italic;color:var(--gold)}
-.hero p{font-size:1rem;line-height:1.8;color:var(--muted);max-width:480px;margin-bottom:2.5rem}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3.5rem}
-.hero-stats{display:flex;gap:3rem;padding-top:2rem;border-top:1px solid var(--border)}
-.stat-item .num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--white);line-height:1}
-.stat-item .num span{color:var(--gold)}
-.stat-item .label{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.hero-car{position:absolute;right:-2%;top:50%;transform:translateY(-50%);width:58%;opacity:.9}
-.hero-car img{width:100%;filter:drop-shadow(0 0 80px rgba(201,168,76,.08));animation:floatCar 6s ease-in-out infinite}
-@keyframes floatCar{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+/* ─── HERO ────────────────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;
+  padding-top:var(--header-h);
+}
+#heroCanvas{position:absolute;inset:0;z-index:0}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 60% at 55% 50%,rgba(201,168,76,.03) 0,transparent 70%),linear-gradient(180deg,transparent 60%,rgba(0,0,0,.8) 100%)}
+.hero-content{position:relative;z-index:2;padding:0 6%;max-width:780px}
+.hero-eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:2.2rem;opacity:0;transform:translateX(-20px)}
+.hero-eyebrow .gold-line{width:48px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.hero-eyebrow span{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold)}
+.hero-headline{font-family:var(--font-serif);font-size:clamp(3.5rem,6.5vw,6rem);font-weight:300;line-height:1.02;color:var(--white);margin-bottom:1.8rem;overflow:hidden}
+.hero-headline .line-wrap{overflow:hidden;display:block}
+.hero-headline .line-inner{display:block;transform:translateY(100%)}
+.hero-headline em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:.95rem;line-height:1.85;color:var(--muted);max-width:500px;margin-bottom:2.8rem;opacity:0;transform:translateY(16px)}
+.hero-actions{display:flex;gap:1.2rem;flex-wrap:wrap;margin-bottom:4rem;opacity:0;transform:translateY(16px)}
+.hero-stats{display:flex;gap:3.5rem;padding-top:2rem;border-top:1px solid var(--border);opacity:0;transform:translateY(16px)}
+.stat-num{font-family:var(--font-serif);font-size:2.4rem;color:var(--white);line-height:1}
+.stat-num span{color:var(--gold)}
+.stat-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.hero-visual{position:absolute;right:0;top:50%;transform:translateY(-50%);width:55%;z-index:1;opacity:0}
+.hero-visual img{width:100%;filter:drop-shadow(0 0 100px rgba(201,168,76,.07));animation:floatCar 7s ease-in-out infinite}
+@keyframes floatCar{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(.5deg)}}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px}
+.scroll-hint span{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(180deg,var(--gold),transparent);animation:scrollDrop 2s ease-in-out infinite}
+@keyframes scrollDrop{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(0);transform-origin:bottom}}
 
-/* MARQUEE */
-.marquee-bar{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;overflow:hidden;background:var(--deep)}
-.marquee-track{display:flex;gap:4rem;white-space:nowrap;animation:marquee 28s linear infinite;width:max-content}
-.marquee-item{display:flex;align-items:center;gap:12px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--gold)}
+/* ─── MARQUEE ─────────────────────────────────────────────────────── */
+.marquee-bar{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;overflow:hidden;background:var(--surface)}
+.marquee-track{display:flex;gap:4rem;white-space:nowrap;animation:marquee 30s linear infinite;width:max-content}
+.marquee-item{display:flex;align-items:center;gap:14px;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.marquee-diamond{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
 @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* SEARCH */
-.search-section{background:var(--deep);padding:50px 5%;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.search-bar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;overflow:hidden;max-width:1100px;margin:0 auto}
-.search-field{background:var(--card);padding:18px 22px}
-.search-field label{display:block;font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-.search-field select,.search-field input{background:transparent;border:none;color:var(--white);font-family:'Outfit',sans-serif;font-size:.9rem;width:100%;outline:none;cursor:pointer}
+/* ─── SECTION COMMONS ─────────────────────────────────────────────── */
+section{padding:110px 6%}
+.section-eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:1.2rem}
+.section-eyebrow .line{width:32px;height:1px;background:var(--gold)}
+.section-eyebrow span{font-size:.63rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.section-title{font-family:var(--font-serif);font-size:clamp(2.2rem,3.8vw,3.5rem);font-weight:300;color:var(--white);line-height:1.1;margin-bottom:1.5rem}
+.section-title em{font-style:italic;color:var(--gold)}
+
+/* ─── SEARCH ──────────────────────────────────────────────────────── */
+.search-section{background:var(--surface);padding:48px 6%;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.search-wrap{max-width:1100px;margin:0 auto}
+.search-label{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.search-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.search-field{background:var(--card);padding:18px 22px;transition:background .2s}
+.search-field:focus-within{background:var(--card2)}
+.search-field label{display:block;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.search-field select,.search-field input{background:transparent;border:none;color:var(--white);font-family:var(--font-sans);font-size:.88rem;width:100%;outline:none;cursor:none}
 .search-field select option{background:var(--card)}
-.search-btn{background:var(--gold);color:var(--black);border:none;padding:0 35px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:background .2s;white-space:nowrap}
+.search-field input::placeholder{color:var(--muted)}
+.search-btn{background:var(--gold);color:var(--black);border:none;padding:0 34px;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;transition:background .2s;white-space:nowrap}
 .search-btn:hover{background:var(--gold-light)}
 
-/* INVENTORY */
-section{padding:100px 5%}
-.section-label{display:flex;align-items:center;gap:12px;margin-bottom:1.2rem}
-.section-label .line{width:30px;height:1px;background:var(--gold)}
-.section-label span{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3.2rem);font-weight:300;color:var(--white);line-height:1.15;margin-bottom:1.5rem}
-.section-title em{font-style:italic;color:var(--gold)}
-.filter-chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem}
-.chip{padding:6px 16px;border:1px solid var(--border);border-radius:20px;font-size:.72rem;letter-spacing:.08em;color:var(--muted);cursor:pointer;transition:all .2s}
+/* ─── INVENTORY ───────────────────────────────────────────────────── */
+.filter-chips{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
+.chip{padding:7px 18px;border:1px solid var(--border);border-radius:20px;font-size:.7rem;letter-spacing:.08em;color:var(--muted);cursor:none;transition:all .25s}
 .chip.active,.chip:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
 
-/* CAR GRID */
-.car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-top:2rem}
-.car-card{background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:all .3s;cursor:pointer}
-.car-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,168,76,.1)}
-.car-img{position:relative;height:210px;overflow:hidden;background:#111}
-.car-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
-.car-card:hover .car-img img{transform:scale(1.04)}
-.car-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--black);font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:3px 10px;border-radius:2px}
-.car-badge.new-badge{background:var(--green)}
-.car-fav{position:absolute;top:14px;right:14px;width:32px;height:32px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--muted);font-size:.85rem}
+/* ─── CAR CARD ────────────────────────────────────────────────────── */
+.car-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.5rem;margin-top:2rem}
+.car-card{
+  background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  transition:border-color .4s,box-shadow .4s,transform .4s var(--ease-luxury);
+  position:relative;cursor:none;
+  transform-style:preserve-3d;
+}
+.car-card:hover{border-color:var(--border2);box-shadow:0 24px 80px rgba(0,0,0,.6),0 0 0 1px rgba(201,168,76,.12),inset 0 1px 0 rgba(201,168,76,.08)}
+.car-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0);transform-origin:center;transition:transform .4s var(--ease-luxury);z-index:2;
+}
+.car-card:hover::before{transform:scaleX(1)}
+.car-img{position:relative;height:220px;overflow:hidden;background:#0a0a0a}
+.car-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease-luxury)}
+.car-card:hover .car-img img{transform:scale(1.06)}
+.car-img-overlay{
+  position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.7) 100%);
+  opacity:0;transition:opacity .4s;display:flex;align-items:flex-end;padding:18px;
+}
+.car-card:hover .car-img-overlay{opacity:1}
+.overlay-cta{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px}
+.overlay-cta::after{content:'→';transition:transform .25s}
+.car-card:hover .overlay-cta::after{transform:translateX(4px)}
+.car-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--black);font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:2px;z-index:1}
+.car-badge.new-badge{background:var(--green);color:#fff}
+.car-badge.premium-badge{background:linear-gradient(135deg,#a07840,var(--gold-light))}
+.car-fav{position:absolute;top:14px;right:14px;width:34px;height:34px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:none;transition:all .25s;color:var(--muted);font-size:.85rem;z-index:1}
 .car-fav:hover{border-color:var(--gold);color:var(--gold)}
-.car-info{padding:20px}
-.car-make{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-.car-name{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--white);font-weight:400;margin-bottom:12px}
-.car-specs{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:16px}
-.spec-pill{font-size:.68rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:20px}
+.car-info{padding:22px 20px 18px}
+.car-make{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.car-name{font-family:var(--font-serif);font-size:1.45rem;color:var(--white);font-weight:400;margin-bottom:14px;line-height:1.2}
+.car-specs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:18px}
+.spec-pill{font-size:.65rem;letter-spacing:.05em;color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:20px;transition:border-color .25s}
+.car-card:hover .spec-pill{border-color:rgba(201,168,76,.15)}
 .car-footer{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border);gap:10px}
-.car-price{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--white);font-weight:400}
-.car-price small{font-family:'Outfit',sans-serif;font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:block;font-weight:300;margin-bottom:2px}
-.car-actions{display:flex;gap:8px}
-.btn-sm{padding:7px 14px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;font-family:'Outfit',sans-serif;font-weight:500;transition:all .2s;white-space:nowrap}
+.car-price small{font-family:var(--font-sans);font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px}
+.car-price-val{font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:400}
+.car-actions{display:flex;gap:7px}
+.btn-sm{padding:7px 13px;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:none;border-radius:2px;font-weight:500;transition:all .2s;white-space:nowrap}
 .btn-sm-gold{background:var(--gold);color:var(--black);border:none}.btn-sm-gold:hover{background:var(--gold-light)}
 .btn-sm-outline{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-sm-outline:hover{border-color:var(--gold);color:var(--gold)}
 .btn-sm-wa{background:#25D366;color:#fff;border:none;display:flex;align-items:center;gap:5px}.btn-sm-wa:hover{background:#1ebe5c}
 
-/* SKELETON LOADER */
-.skeleton{background:linear-gradient(90deg,var(--card) 25%,#1a1a1a 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px}
+/* ─── SKELETON ────────────────────────────────────────────────────── */
+.skeleton{background:linear-gradient(90deg,var(--card) 25%,#1c1c1c 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skeleton-card{background:var(--card);border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.skeleton-img{height:210px}.skeleton-body{padding:20px}.skeleton-line{height:14px;margin-bottom:10px}
+.skeleton-card{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.skeleton-img{height:220px}.skeleton-body{padding:22px}.skeleton-line{height:13px;margin-bottom:12px}
 
-/* SELL SECTION */
-.sell-section{background:var(--deep)}
-.sell-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1200px;margin:0 auto}
-.sell-steps{display:flex;flex-direction:column;gap:2rem}
-.sell-step{display:flex;gap:1.5rem;align-items:flex-start}
-.step-num{width:44px;height:44px;flex-shrink:0;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold)}
-.step-info h4{color:var(--white);font-weight:400;margin-bottom:4px}
-.step-info p{font-size:.85rem;color:var(--muted);line-height:1.6}
-.sell-form-box{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:36px}
-.sell-form-box h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--white);font-weight:300;margin-bottom:24px}
+/* ─── WHY US ──────────────────────────────────────────────────────── */
+.features-section{background:var(--surface)}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:3.5rem;border:1px solid var(--border)}
+.feature-item{
+  background:var(--surface);padding:3rem 2.2rem;position:relative;overflow:hidden;
+  transition:background .3s,transform .35s var(--ease-luxury);
+}
+.feature-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease-luxury)}
+.feature-item:hover{background:var(--card);transform:translateY(-4px)}
+.feature-item:hover::after{transform:scaleX(1)}
+.feature-num{font-family:var(--font-serif);font-size:4rem;font-weight:300;color:rgba(201,168,76,.06);position:absolute;top:16px;right:20px;line-height:1;pointer-events:none;transition:color .3s}
+.feature-item:hover .feature-num{color:rgba(201,168,76,.1)}
+.feature-icon{
+  width:50px;height:50px;border:1px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.4rem;
+  transition:all .35s;background:var(--gold-dim);
+}
+.feature-item:hover .feature-icon{background:var(--gold-dim);border-color:var(--gold);transform:scale(1.1)}
+.feature-item h4{font-family:var(--font-serif);font-size:1.15rem;color:var(--white);margin-bottom:10px;font-weight:400}
+.feature-item p{font-size:.82rem;color:var(--muted);line-height:1.7}
+
+/* ─── SELL SECTION ────────────────────────────────────────────────── */
+.sell-section{background:var(--black)}
+.sell-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;max-width:1200px;margin:0 auto}
+.sell-steps{display:flex;flex-direction:column;gap:2.2rem;margin-top:2.5rem}
+.sell-step{display:flex;gap:1.8rem;align-items:flex-start;padding:1.5rem;border:1px solid var(--border);border-radius:4px;transition:all .3s;background:transparent}
+.sell-step:hover{border-color:var(--border2);background:var(--gold-dim);transform:translateX(6px)}
+.step-num{width:46px;height:46px;flex-shrink:0;border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:1.1rem;color:var(--gold);transition:all .3s}
+.sell-step:hover .step-num{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.step-info h4{color:var(--white);font-weight:400;margin-bottom:5px;font-size:.95rem}
+.step-info p{font-size:.82rem;color:var(--muted);line-height:1.6}
+.sell-form-box{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:38px;position:relative;overflow:hidden}
+.sell-form-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.sell-form-box h3{font-family:var(--font-serif);font-size:1.85rem;color:var(--white);font-weight:300;margin-bottom:24px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.form-group{margin-bottom:1rem}
-.form-group label{display:block;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--black);border:1px solid var(--border);border-radius:2px;padding:11px 14px;color:var(--white);font-family:'Outfit',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;background:var(--black);border:1px solid var(--border);border-radius:2px;
+  padding:12px 14px;color:var(--white);font-family:var(--font-sans);font-size:.88rem;
+  outline:none;transition:border-color .25s;
+}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold)}
 .form-group select option{background:var(--card)}
-.form-group textarea{resize:vertical;min-height:80px}
+.form-group textarea{resize:vertical;min-height:85px}
 .form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted)}
-
-/* IMAGE UPLOAD */
-.img-upload-zone{border:2px dashed var(--border);border-radius:4px;padding:30px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.img-upload-zone{border:1px dashed var(--border2);border-radius:4px;padding:28px;text-align:center;cursor:none;transition:all .25s;position:relative}
 .img-upload-zone:hover,.img-upload-zone.dragover{border-color:var(--gold);background:var(--gold-dim)}
-.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.img-upload-zone .upload-icon{font-size:1.8rem;margin-bottom:8px}
-.img-upload-zone .upload-text{font-size:.8rem;color:var(--muted);line-height:1.6}
-.img-upload-zone .upload-text strong{color:var(--gold);display:block;font-size:.85rem;margin-bottom:4px}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:none;width:100%;height:100%}
+.img-upload-zone .upload-icon{font-size:1.7rem;margin-bottom:8px}
+.img-upload-zone .upload-text{font-size:.78rem;color:var(--muted);line-height:1.6}
+.img-upload-zone .upload-text strong{color:var(--gold);display:block;font-size:.82rem;margin-bottom:4px}
 .img-preview-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .img-preview-item{position:relative;width:80px;height:64px;border-radius:3px;overflow:hidden;border:1px solid var(--border)}
 .img-preview-item img{width:100%;height:100%;object-fit:cover}
-.img-preview-item .remove-img{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:#fff;border:none}
-.img-preview-item .primary-star{position:absolute;bottom:2px;left:2px;font-size:.65rem;background:var(--gold);color:var(--black);padding:1px 4px;border-radius:2px}
+.img-preview-item .remove-img{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:none;font-size:.58rem;color:#fff;border:none}
+.img-preview-item .primary-star{position:absolute;bottom:2px;left:2px;font-size:.6rem;background:var(--gold);color:var(--black);padding:1px 4px;border-radius:2px}
 
-/* FEATURES */
-.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:3rem}
-.feature-item{background:var(--deep);padding:2.5rem 2rem;transition:background .25s}
-.feature-item:hover{background:var(--card)}
-.feature-icon{font-size:1.8rem;margin-bottom:1.2rem}
-.feature-item h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--white);margin-bottom:8px}
-.feature-item p{font-size:.82rem;color:var(--muted);line-height:1.6}
-
-/* TESTIMONIALS */
-.testimonials-section{background:var(--deep)}
+/* ─── TESTIMONIALS ────────────────────────────────────────────────── */
+.testimonials-section{background:var(--surface)}
 .testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
-.testimonial-card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:28px}
-.stars{color:var(--gold);font-size:.85rem;letter-spacing:2px;margin-bottom:14px}
-.testimonial-card blockquote{font-size:.9rem;line-height:1.7;color:var(--text);font-style:italic;margin-bottom:18px}
-.testimonial-author{display:flex;align-items:center;gap:12px}
-.author-avatar{width:38px;height:38px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold)}
-.author-name{font-size:.85rem;color:var(--white)}
-.author-location{font-size:.7rem;color:var(--muted)}
+.testimonial-card{
+  background:var(--card);border:1px solid var(--border);border-radius:6px;padding:30px;
+  position:relative;transition:all .35s var(--ease-luxury);
+}
+.testimonial-card::before{content:'"';position:absolute;top:14px;right:22px;font-family:var(--font-serif);font-size:5rem;line-height:1;color:rgba(201,168,76,.06);pointer-events:none}
+.testimonial-card:hover{border-color:var(--border2);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.stars{color:var(--gold);font-size:.85rem;letter-spacing:3px;margin-bottom:16px}
+.testimonial-card blockquote{font-size:.9rem;line-height:1.75;color:var(--text);font-style:italic;margin-bottom:20px}
+.testimonial-author{display:flex;align-items:center;gap:14px}
+.author-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--gold-dim);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-serif);font-size:1rem;color:var(--gold);flex-shrink:0;
+}
+.author-name{font-size:.85rem;color:var(--white);font-weight:400}
+.author-loc{font-size:.68rem;color:var(--muted);margin-top:2px}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+/* ─── CONTACT ─────────────────────────────────────────────────────── */
+.contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;max-width:1100px;margin:0 auto}
+.contact-detail{display:flex;gap:1rem;align-items:center;padding:1.2rem 0;border-bottom:1px solid var(--border);transition:all .25s}
+.contact-detail:hover{border-color:var(--border2)}
+.contact-icon{width:46px;height:46px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .3s;flex-shrink:0}
+.contact-detail:hover .contact-icon{border-color:var(--gold);background:var(--gold-dim)}
+.contact-detail-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.contact-detail-val{color:var(--white);font-size:.92rem}
+
+/* ─── FOOTER ──────────────────────────────────────────────────────── */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:64px 6% 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr;gap:3rem;margin-bottom:3rem}
+.footer-brand h3{font-family:var(--font-serif);font-size:1.6rem;color:var(--white);margin-bottom:12px;font-weight:300}
+.footer-brand h3 span{color:var(--gold)}
+.footer-brand p{font-size:.82rem;color:var(--muted);line-height:1.8;max-width:260px}
+.footer-col h4{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:10px}
+.footer-col ul li a{font-size:.82rem;color:var(--muted);transition:color .2s;display:inline-flex;align-items:center;gap:6px}
+.footer-col ul li a::before{content:'';width:0;height:1px;background:var(--gold);transition:width .25s}
+.footer-col ul li a:hover{color:var(--white)}
+.footer-col ul li a:hover::before{width:12px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid var(--border);font-size:.7rem;color:var(--muted)}
+.footer-bottom a{color:var(--muted);transition:color .2s}.footer-bottom a:hover{color:var(--gold)}
+
+/* ─── MODAL ───────────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:6px;max-width:820px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:24px 30px 20px;border-bottom:1px solid var(--border)}
-.modal-header h2{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--white);font-weight:300}
-.modal-close{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:8px;max-width:840px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:26px 32px 22px;border-bottom:1px solid var(--border)}
+.modal-header h2{font-family:var(--font-serif);font-size:1.75rem;color:var(--white);font-weight:300}
+.modal-close{width:36px;height:36px;border:1px solid var(--border);border-radius:50%;background:transparent;color:var(--muted);cursor:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
 .modal-close:hover{border-color:var(--gold);color:var(--gold)}
-.modal-body{padding:28px 30px 30px}
+.modal-body{padding:28px 32px 32px}
 .modal-car-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem}
-.modal-main-img{border-radius:3px;overflow:hidden;height:260px;background:#111;margin-bottom:8px}
+.modal-main-img{border-radius:4px;overflow:hidden;height:265px;background:#0a0a0a;margin-bottom:8px}
 .modal-main-img img{width:100%;height:100%;object-fit:cover}
 .modal-thumb-row{display:flex;gap:6px;flex-wrap:wrap}
-.modal-thumb{width:60px;height:46px;border-radius:2px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
+.modal-thumb{width:62px;height:48px;border-radius:3px;overflow:hidden;cursor:none;border:2px solid transparent;transition:border-color .2s}
 .modal-thumb.active,.modal-thumb:hover{border-color:var(--gold)}
 .modal-thumb img{width:100%;height:100%;object-fit:cover}
 .modal-specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
-.spec-item .key{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.spec-item .key{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
 .spec-item .val{color:var(--white);font-size:.9rem}
 .modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-.btn-wa{display:flex;align-items:center;gap:10px;justify-content:center;background:#25D366;color:#fff;padding:13px;border-radius:3px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;transition:background .2s}
+.btn-wa{display:flex;align-items:center;gap:10px;justify-content:center;background:#25D366;color:#fff;padding:13px;border-radius:3px;border:none;cursor:none;font-size:.85rem;font-weight:500;transition:background .2s}
 .btn-wa:hover{background:#1ebe5c}
-.btn-enquire{display:flex;align-items:center;gap:10px;justify-content:center;background:transparent;color:var(--gold);padding:13px;border-radius:3px;border:1px solid var(--gold);cursor:pointer;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;transition:all .2s}
+.btn-enquire{display:flex;align-items:center;gap:10px;justify-content:center;background:transparent;color:var(--gold);padding:13px;border-radius:3px;border:1px solid var(--border2);cursor:none;font-size:.85rem;font-weight:500;transition:all .2s}
 .btn-enquire:hover{background:var(--gold-dim)}
 .enquiry-wrap{display:none;margin-top:16px}
 .enquiry-wrap.open{display:block}
-.enquiry-wrap h4{font-family:'Cormorant Garamond',serif;color:var(--white);font-size:1.1rem;margin-bottom:14px}
+.enquiry-wrap h4{font-family:var(--font-serif);color:var(--white);font-size:1.1rem;margin-bottom:14px}
 
-/* FOOTER */
-footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5% 30px}
-.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1.2fr;gap:3rem;margin-bottom:3rem}
-.footer-brand h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--white);margin-bottom:12px}
-.footer-brand h3 span{color:var(--gold)}
-.footer-brand p{font-size:.85rem;color:var(--muted);line-height:1.7;max-width:280px}
-.footer-col h4{font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
-.footer-col ul{list-style:none}
-.footer-col ul li{margin-bottom:10px}
-.footer-col ul li a{font-size:.85rem;color:var(--muted);transition:color .2s}
-.footer-col ul li a:hover{color:var(--white)}
-.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid var(--border);font-size:.73rem;color:var(--muted)}
+/* ─── TOAST ───────────────────────────────────────────────────────── */
+.toast{position:fixed;bottom:32px;right:32px;z-index:9999;background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 24px;color:var(--white);font-size:.84rem;transform:translateY(120%);transition:transform .4s var(--ease-luxury);max-width:320px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.toast.show{transform:translateY(0)}
+.toast-title{color:var(--gold);font-weight:500;margin-bottom:4px;font-size:.88rem}
 
-/* TOAST */
-.toast{position:fixed;bottom:30px;right:30px;z-index:9999;background:var(--card);border:1px solid var(--gold);border-radius:4px;padding:14px 22px;color:var(--white);font-size:.85rem;transform:translateX(150%);transition:transform .35s;max-width:320px}
-.toast.show{transform:translateX(0)}
-.toast .toast-title{color:var(--gold);font-weight:500;margin-bottom:4px}
-
-@media(max-width:1024px){.hero-car{width:50%;opacity:.6}.features-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.sell-inner{grid-template-columns:1fr;gap:3rem}}
-@media(max-width:768px){.nav-links{display:none}.hero-car{display:none}.hero h1{font-size:2.8rem}.hero-stats{gap:2rem}.search-bar{grid-template-columns:1fr 1fr}.testimonials-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr;gap:2rem}.modal-car-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.features-grid{grid-template-columns:1fr}section{padding:70px 5%}}
-@media(max-width:480px){.hero-stats{flex-direction:column;gap:1.2rem}.hero-actions{flex-direction:column}.search-bar{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:1rem;text-align:center}}
+/* ─── RESPONSIVE ──────────────────────────────────────────────────── */
+@media(max-width:1100px){.hero-visual{width:48%;opacity:.55}.features-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.sell-inner{grid-template-columns:1fr;gap:3rem}.contact-inner{grid-template-columns:1fr}}
+@media(max-width:768px){
+  body{cursor:auto}.hero-visual{display:none}
+  #cursor,#cursorRing{display:none}
+  .nav-links{display:none}.hero-headline{font-size:2.8rem}
+  .hero-stats{gap:2rem}.testimonials-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr;gap:2rem}
+  .modal-car-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}
+  .features-grid{grid-template-columns:1fr}
+  .search-grid{grid-template-columns:1fr 1fr}
+  section{padding:80px 5%}
+  .sell-form-box{padding:26px}
+}
+@media(max-width:480px){
+  .hero-stats{flex-direction:column;gap:1.5rem}
+  .hero-actions{flex-direction:column}
+  .search-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;gap:1rem;text-align:center}
+}
 </style>
 </head>
 <body>
 
-<div class="alert-bar">🇬🇧 UK's Premium Pre-Owned Car Marketplace — Finance Available From 6.9% APR — <a href="#sell">Sell Your Car</a> — Free HPI Check on All Listings</div>
+<!-- ═══ PAGE LOADER ═══════════════════════════════════════════════ -->
+<div id="pageLoader">
+  <div class="loader-logo">Prestige<span>Motors</span></div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
 
+<!-- ═══ CURSOR ════════════════════════════════════════════════════ -->
+<div id="cursor"></div>
+<div id="cursorRing"></div>
+
+<!-- ═══ ALERT BAR ════════════════════════════════════════════════ -->
+<div class="alert-bar">🇬🇧 UK's Premium Pre-Owned Marketplace — Finance from 6.9% APR — <a href="#sell">Sell Your Car</a> — Free HPI Check on All Listings</div>
+
+<!-- ═══ NAV ════════════════════════════════════════════════════════ -->
 <nav id="mainNav">
   <div class="nav-logo">
     <div class="logo-text">Prestige<span>Motors</span></div>
-    <div class="logo-badge">Est. UK</div>
+    <div class="logo-pill">Est. UK</div>
   </div>
   <ul class="nav-links">
     <li><a href="#inventory">Inventory</a></li>
-    <li><a href="#sell">Sell Your Car</a></li>
     <li><a href="#about">Why Us</a></li>
+    <li><a href="#sell">Sell</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-cta">
-    <button class="btn-outline" onclick="openWhatsApp('Hello! I have a general enquiry about PrestigeMotors UK.')">WhatsApp Us</button>
-    <button class="btn-gold" onclick="document.getElementById('sellModal').classList.add('active')">Sell My Car</button>
+    <button class="btn-ghost" onclick="openWhatsApp('Hello! I have a general enquiry about PrestigeMotors UK.')">WhatsApp Us</button>
+    <button class="btn-gold" onclick="document.getElementById('sellModal').classList.add('active')"><span>Sell My Car</span></button>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div><div class="hero-grid"></div>
+<!-- ═══ HERO ════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow"><div class="line"></div><span>Premium Pre-Owned Vehicles · United Kingdom</span></div>
-    <h1>Drive <em>Exceptional.</em><br>Pay Less.</h1>
-    <p>Discover hand-selected, HPI-clear premium and luxury vehicles. Every car inspected, documented, and priced transparently.</p>
+    <div class="hero-eyebrow">
+      <div class="gold-line"></div>
+      <span>Premium Pre-Owned Vehicles · United Kingdom</span>
+    </div>
+    <h1 class="hero-headline">
+      <span class="line-wrap"><span class="line-inner">Drive <em>Exceptional.</em></span></span>
+      <span class="line-wrap"><span class="line-inner">Pay Less.</span></span>
+    </h1>
+    <p class="hero-sub">Hand-selected, HPI-clear luxury vehicles. Every car inspected, documented, and priced with complete transparency.</p>
     <div class="hero-actions">
-      <button class="btn-gold" onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})">Browse Inventory</button>
-      <button class="btn-outline" onclick="document.getElementById('sell').scrollIntoView({behavior:'smooth'})">Sell Your Car</button>
+      <button class="btn-gold" onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})"><span>Browse Inventory</span></button>
+      <button class="btn-ghost" onclick="document.getElementById('sell').scrollIntoView({behavior:'smooth'})">Sell Your Car</button>
     </div>
     <div class="hero-stats">
-      <div class="stat-item"><div class="num" id="heroListings">—</div><div class="label">Cars Available</div></div>
-      <div class="stat-item"><div class="num">12<span>yr</span></div><div class="label">In Business</div></div>
-      <div class="stat-item"><div class="num">1.2<span>k</span></div><div class="label">Happy Buyers</div></div>
+      <div class="stat-item">
+        <div class="stat-num" id="heroListings">—</div>
+        <div class="stat-label">Cars Available</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statYrs">12<span>yr</span></div>
+        <div class="stat-label">In Business</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statBuyers">1.2<span>k</span></div>
+        <div class="stat-label">Happy Buyers</div>
+      </div>
     </div>
   </div>
-  <div class="hero-car"><img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&auto=format" alt="Luxury Car" onerror="this.style.display='none'"></div>
+  <div class="hero-visual">
+    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80&auto=format" alt="Luxury Car" onerror="this.parentElement.style.display='none'">
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
 </section>
 
-<!-- MARQUEE -->
+<!-- ═══ MARQUEE ════════════════════════════════════════════════════ -->
 <div class="marquee-bar">
   <div class="marquee-track">
-    <div class="marquee-item"><div class="marquee-dot"></div>HPI Clear Guarantee</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Free Vehicle History Check</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Finance Available</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Part Exchange Welcome</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Next Day Delivery</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>14-Day Returns</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Nationwide Delivery</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Dealer Warranty Available</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>HPI Clear Guarantee</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Free Vehicle History Check</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Finance Available</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Part Exchange Welcome</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Next Day Delivery</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>14-Day Returns</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Nationwide Delivery</div>
-    <div class="marquee-item"><div class="marquee-dot"></div>Dealer Warranty Available</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>HPI Clear Guarantee</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Free Vehicle History Check</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Finance Available</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Part Exchange Welcome</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Next Day Delivery</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>14-Day Returns</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Nationwide Delivery</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Dealer Warranty Available</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>HPI Clear Guarantee</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Free Vehicle History Check</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Finance Available</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Part Exchange Welcome</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Next Day Delivery</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>14-Day Returns</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Nationwide Delivery</div>
+    <div class="marquee-item"><div class="marquee-diamond"></div>Dealer Warranty Available</div>
   </div>
 </div>
 
-<!-- SEARCH -->
+<!-- ═══ SEARCH ════════════════════════════════════════════════════ -->
 <div class="search-section">
-  <div class="search-bar">
-    <div class="search-field"><label>Make</label>
-      <select id="filterMake" onchange="loadCars()">
-        <option value="">All Makes</option>
-        <option>BMW</option><option>Mercedes-Benz</option><option>Audi</option>
-        <option>Range Rover</option><option>Jaguar</option><option>Porsche</option>
-        <option>Volkswagen</option><option>Ford</option><option>Toyota</option><option>Lexus</option>
-      </select>
+  <div class="search-wrap">
+    <div class="search-label">Search Our Collection</div>
+    <div class="search-grid">
+      <div class="search-field">
+        <label>Make</label>
+        <select id="filterMake" onchange="loadCars()">
+          <option value="">All Makes</option>
+          <option>BMW</option><option>Mercedes-Benz</option><option>Audi</option>
+          <option>Range Rover</option><option>Jaguar</option><option>Porsche</option>
+          <option>Volkswagen</option><option>Ford</option><option>Toyota</option><option>Lexus</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Body Type</label>
+        <select id="filterType" onchange="loadCars()">
+          <option value="">Any Type</option>
+          <option>Saloon</option><option>SUV</option><option>Hatchback</option>
+          <option>Coupe</option><option>Estate</option><option>Convertible</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Max Budget</label>
+        <select id="filterPrice" onchange="loadCars()">
+          <option value="">No Limit</option>
+          <option value="10000">Up to £10,000</option><option value="20000">Up to £20,000</option>
+          <option value="35000">Up to £35,000</option><option value="50000">Up to £50,000</option>
+          <option value="75000">Up to £75,000</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Keyword</label>
+        <input type="text" id="filterKeyword" placeholder="e.g. M3, automatic…" oninput="debounceLoad()">
+      </div>
+      <button class="search-btn" onclick="loadCars()">Search</button>
     </div>
-    <div class="search-field"><label>Body Type</label>
-      <select id="filterType" onchange="loadCars()">
-        <option value="">Any Type</option>
-        <option>Saloon</option><option>SUV</option><option>Hatchback</option>
-        <option>Coupe</option><option>Estate</option><option>Convertible</option>
-      </select>
-    </div>
-    <div class="search-field"><label>Max Budget</label>
-      <select id="filterPrice" onchange="loadCars()">
-        <option value="">No Limit</option>
-        <option value="10000">Up to £10,000</option><option value="20000">Up to £20,000</option>
-        <option value="35000">Up to £35,000</option><option value="50000">Up to £50,000</option>
-        <option value="75000">Up to £75,000</option>
-      </select>
-    </div>
-    <div class="search-field"><label>Keyword</label>
-      <input type="text" id="filterKeyword" placeholder="e.g. M3, automatic..." oninput="debounceLoad()">
-    </div>
-    <button class="search-btn" onclick="loadCars()">Search</button>
   </div>
 </div>
 
-<!-- INVENTORY -->
+<!-- ═══ INVENTORY ══════════════════════════════════════════════════ -->
 <section id="inventory">
-  <div class="section-label"><div class="line"></div><span>Our Stock</span></div>
-  <h2 class="section-title">Available <em>Vehicles</em></h2>
-  <div class="filter-chips" id="filterChips">
+  <div class="section-eyebrow" data-aos="fade-right">
+    <div class="line"></div><span>Our Collection</span>
+  </div>
+  <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">Available <em>Vehicles</em></h2>
+  <div class="filter-chips" id="filterChips" data-aos="fade-up" data-aos-delay="140">
     <div class="chip active" onclick="setChip(this,'')">All Cars</div>
     <div class="chip" onclick="setChip(this,'SUV')">SUV</div>
     <div class="chip" onclick="setChip(this,'Saloon')">Saloon</div>
@@ -326,38 +527,71 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
     <div class="chip" onclick="setChip(this,'Convertible')">Convertible</div>
   </div>
   <div class="car-grid" id="carGrid"></div>
-  <div style="text-align:center;margin-top:3rem">
-    <button class="btn-outline" id="loadMoreBtn" style="display:none" onclick="loadMore()">Load More Vehicles</button>
+  <div style="text-align:center;margin-top:3.5rem">
+    <button class="btn-ghost" id="loadMoreBtn" style="display:none;padding:12px 32px;font-size:.75rem;letter-spacing:.15em" onclick="loadMore()">Load More Vehicles</button>
   </div>
 </section>
 
-<!-- WHY US -->
-<section id="about">
-  <div class="section-label"><div class="line"></div><span>Why PrestigeMotors</span></div>
-  <h2 class="section-title">Built on <em>Trust</em> &amp; Transparency</h2>
-  <p style="color:var(--muted);max-width:560px;line-height:1.8;margin-bottom:0">Every vehicle has been hand-picked, independently inspected, and backed by a clear history report.</p>
+<!-- ═══ WHY US ═════════════════════════════════════════════════════ -->
+<section id="about" class="features-section">
+  <div class="section-eyebrow" data-aos="fade-right">
+    <div class="line"></div><span>Why PrestigeMotors</span>
+  </div>
+  <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">Built on <em>Trust</em> &amp; Transparency</h2>
+  <p style="color:var(--muted);max-width:540px;line-height:1.85" data-aos="fade-up" data-aos-delay="140">Every vehicle has been hand-picked, independently inspected, and backed by a clear history report.</p>
   <div class="features-grid">
-    <div class="feature-item"><div class="feature-icon">🔍</div><h4>HPI Checked</h4><p>Every car is fully HPI checked — outstanding finance, stolen checks, write-off checks done before listing.</p></div>
-    <div class="feature-item"><div class="feature-icon">🛡️</div><h4>Dealer Warranty</h4><p>Up to 12 months warranty available on selected vehicles, giving you complete peace of mind.</p></div>
-    <div class="feature-item"><div class="feature-icon">💷</div><h4>Fair Finance</h4><p>Flexible finance from 6.9% APR. We work with top UK lenders to find you the best deal.</p></div>
-    <div class="feature-item"><div class="feature-icon">🚗</div><h4>UK Nationwide Delivery</h4><p>We deliver to your door anywhere in mainland UK, fully insured at a competitive price.</p></div>
+    <div class="feature-item" data-aos="fade-up" data-aos-delay="0">
+      <div class="feature-num">01</div>
+      <div class="feature-icon">🔍</div>
+      <h4>HPI Checked</h4>
+      <p>Every car fully HPI checked — outstanding finance, stolen checks, write-off checks before listing.</p>
+    </div>
+    <div class="feature-item" data-aos="fade-up" data-aos-delay="120">
+      <div class="feature-num">02</div>
+      <div class="feature-icon">🛡️</div>
+      <h4>Dealer Warranty</h4>
+      <p>Up to 12 months warranty on selected vehicles, giving you complete peace of mind.</p>
+    </div>
+    <div class="feature-item" data-aos="fade-up" data-aos-delay="240">
+      <div class="feature-num">03</div>
+      <div class="feature-icon">💷</div>
+      <h4>Fair Finance</h4>
+      <p>Flexible finance from 6.9% APR. We work with top UK lenders to find you the best deal.</p>
+    </div>
+    <div class="feature-item" data-aos="fade-up" data-aos-delay="360">
+      <div class="feature-num">04</div>
+      <div class="feature-icon">🚗</div>
+      <h4>Nationwide Delivery</h4>
+      <p>We deliver anywhere in mainland UK — fully insured, at a competitive price.</p>
+    </div>
   </div>
 </section>
 
-<!-- SELL SECTION -->
+<!-- ═══ SELL ═══════════════════════════════════════════════════════ -->
 <section class="sell-section" id="sell">
   <div class="sell-inner">
     <div>
-      <div class="section-label"><div class="line"></div><span>Sell With Us</span></div>
-      <h2 class="section-title">Get the Best<br><em>Price</em> for Your Car</h2>
-      <p style="color:var(--muted);max-width:460px;line-height:1.8;margin-bottom:3rem">Submit your car details and photos below. Our team reviews every submission and lists approved cars within 24 hours.</p>
+      <div class="section-eyebrow" data-aos="fade-right">
+        <div class="line"></div><span>Sell With Us</span>
+      </div>
+      <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">Get the Best<br><em>Price</em> for Your Car</h2>
+      <p style="color:var(--muted);max-width:420px;line-height:1.85" data-aos="fade-up" data-aos-delay="140">Submit your car details and photos. Our team reviews every submission and lists approved cars within 24 hours.</p>
       <div class="sell-steps">
-        <div class="sell-step"><div class="step-num">1</div><div class="step-info"><h4>Submit Your Details & Photos</h4><p>Fill in your car's details and upload up to 8 photos directly.</p></div></div>
-        <div class="sell-step"><div class="step-num">2</div><div class="step-info"><h4>Admin Review</h4><p>Our team verifies your listing and approves within 24hrs.</p></div></div>
-        <div class="sell-step"><div class="step-num">3</div><div class="step-info"><h4>Go Live &amp; Sell</h4><p>Your car appears on our marketplace. Serious buyers contact you directly.</p></div></div>
+        <div class="sell-step" data-aos="fade-right" data-aos-delay="0">
+          <div class="step-num">1</div>
+          <div class="step-info"><h4>Submit Details &amp; Photos</h4><p>Fill in your car's info and upload up to 8 photos directly.</p></div>
+        </div>
+        <div class="sell-step" data-aos="fade-right" data-aos-delay="150">
+          <div class="step-num">2</div>
+          <div class="step-info"><h4>Admin Review</h4><p>Our team verifies your listing and approves within 24hrs.</p></div>
+        </div>
+        <div class="sell-step" data-aos="fade-right" data-aos-delay="300">
+          <div class="step-num">3</div>
+          <div class="step-info"><h4>Go Live &amp; Sell</h4><p>Your car appears on our marketplace. Serious buyers contact you directly.</p></div>
+        </div>
       </div>
     </div>
-    <div class="sell-form-box">
+    <div class="sell-form-box" data-aos="fade-left" data-aos-delay="200">
       <h3>Submit Your Car</h3>
       <div id="sellFormWrap">
         <div class="form-row">
@@ -371,88 +605,158 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
         </div>
         <div class="form-row">
           <div class="form-group"><label>Year</label><input type="number" id="sYear" placeholder="2019" min="1990" max="2026"></div>
-          <div class="form-group"><label>Mileage</label><input type="text" id="sMileage" placeholder="e.g. 42,000"></div>
+          <div class="form-group"><label>Mileage</label><input type="text" id="sMileage" placeholder="42,000"></div>
         </div>
         <div class="form-row">
           <div class="form-group"><label>Asking Price (£)</label><input type="number" id="sPrice" placeholder="15000"></div>
-          <div class="form-group"><label>Registration Plate</label><input type="text" id="sReg" placeholder="e.g. AB21 XYZ"></div>
+          <div class="form-group"><label>Registration Plate</label><input type="text" id="sReg" placeholder="AB21 XYZ"></div>
         </div>
         <div class="form-group">
           <label>Additional Info / Condition</label>
-          <textarea id="sNotes" placeholder="Service history, any damage, reason for selling..."></textarea>
+          <textarea id="sNotes" placeholder="Service history, any damage, reason for selling…"></textarea>
         </div>
-        <!-- IMAGE UPLOAD -->
         <div class="form-group">
           <label>Car Photos (up to 8 images)</label>
           <div class="img-upload-zone" id="sellUploadZone">
             <input type="file" id="sellImages" accept="image/*" multiple onchange="handleSellImages(this)">
             <div class="upload-icon">📷</div>
-            <div class="upload-text">
-              <strong>Click or drag photos here</strong>
-              JPG, PNG, WebP — max 8MB each
-            </div>
+            <div class="upload-text"><strong>Click or drag photos here</strong>JPG, PNG, WebP — max 8MB each</div>
           </div>
           <div class="img-preview-grid" id="sellPreviewGrid"></div>
         </div>
-        <button class="btn-gold" style="width:100%;padding:14px;" onclick="submitSellForm()">Submit for Approval →</button>
+        <button class="btn-gold" style="width:100%;padding:15px" onclick="submitSellForm()"><span>Submit for Approval →</span></button>
       </div>
       <div id="sellSuccess" style="display:none;text-align:center;padding:30px 0">
-        <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
-        <h4 style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px">Submission Received!</h4>
-        <p style="color:var(--muted);font-size:.9rem;line-height:1.7">Our team will review your listing and get back to you within 24 hours via WhatsApp or email.</p>
+        <div style="font-size:2.5rem;margin-bottom:14px">✅</div>
+        <h4 style="color:var(--gold);font-family:var(--font-serif);font-size:1.6rem;margin-bottom:10px">Submission Received!</h4>
+        <p style="color:var(--muted);font-size:.9rem;line-height:1.7">Our team will review your listing and contact you within 24 hours via WhatsApp or email.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
+<!-- ═══ TESTIMONIALS ══════════════════════════════════════════════ -->
 <section class="testimonials-section">
-  <div class="section-label"><div class="line"></div><span>Reviews</span></div>
-  <h2 class="section-title">What Our <em>Customers</em> Say</h2>
+  <div class="section-eyebrow" data-aos="fade-right">
+    <div class="line"></div><span>Client Reviews</span>
+  </div>
+  <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">What Our <em>Clients</em> Say</h2>
   <div class="testimonials-grid">
-    <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>"Bought a BMW 5 Series — seamless process. HPI check included, car exactly as described."</blockquote><div class="testimonial-author"><div class="author-avatar">JM</div><div><div class="author-name">James Mitchell</div><div class="author-location">Manchester, UK</div></div></div></div>
-    <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>"Sold my Range Rover through their sell form — listed same day. Very professional team."</blockquote><div class="testimonial-author"><div class="author-avatar">SK</div><div><div class="author-name">Sarah Khan</div><div class="author-location">London, UK</div></div></div></div>
-    <div class="testimonial-card"><div class="stars">★★★★★</div><blockquote>"WhatsApp enquiry feature is brilliant — got a reply within minutes with all details. Bought it next day."</blockquote><div class="testimonial-author"><div class="author-avatar">RP</div><div><div class="author-name">Raj Patel</div><div class="author-location">Birmingham, UK</div></div></div></div>
+    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="0">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Bought a BMW 5 Series — seamless process. HPI check included, car exactly as described. Exceptional service."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">JM</div>
+        <div><div class="author-name">James Mitchell</div><div class="author-loc">Manchester, UK</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="150">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Sold my Range Rover through their sell form — listed the same day. Very professional and responsive team."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">SK</div>
+        <div><div class="author-name">Sarah Khan</div><div class="author-loc">London, UK</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+      <div class="stars">★★★★★</div>
+      <blockquote>"WhatsApp enquiry feature is brilliant — got a reply within minutes with all details. Bought it the next day."</blockquote>
+      <div class="testimonial-author">
+        <div class="author-avatar">RP</div>
+        <div><div class="author-name">Raj Patel</div><div class="author-loc">Birmingham, UK</div></div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- ═══ CONTACT ════════════════════════════════════════════════════ -->
 <section id="contact">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;max-width:1100px;margin:0 auto">
+  <div class="contact-inner">
     <div>
-      <div class="section-label"><div class="line"></div><span>Get In Touch</span></div>
-      <h2 class="section-title">We're <em>Here</em><br>to Help</h2>
-      <p style="color:var(--muted);line-height:1.8;margin-bottom:2rem">Have a general enquiry? Want to book a viewing? Get in touch and our team will respond promptly.</p>
-      <div style="display:flex;flex-direction:column;gap:1.2rem">
-        <div style="display:flex;gap:1rem;align-items:center"><div style="width:44px;height:44px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">📞</div><div><div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:2px">Phone</div><div style="color:var(--white)">+44 7587 476393</div></div></div>
-        <div style="display:flex;gap:1rem;align-items:center"><div style="width:44px;height:44px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">💬</div><div><div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:2px">WhatsApp</div><a href="https://wa.me/447587476393" target="_blank" style="color:var(--white)">Message Us on WhatsApp</a></div></div>
-        <div style="display:flex;gap:1rem;align-items:center"><div style="width:44px;height:44px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">📍</div><div><div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:2px">Location</div><div style="color:var(--white)">United Kingdom</div></div></div>
+      <div class="section-eyebrow" data-aos="fade-right">
+        <div class="line"></div><span>Get In Touch</span>
+      </div>
+      <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">We're <em>Here</em><br>to Help</h2>
+      <p style="color:var(--muted);line-height:1.85;margin-bottom:2.5rem" data-aos="fade-up" data-aos-delay="140">Have a general enquiry? Want to book a viewing? Our team responds promptly.</p>
+      <div data-aos="fade-up" data-aos-delay="200">
+        <div class="contact-detail">
+          <div class="contact-icon">📞</div>
+          <div><div class="contact-detail-label">Phone</div><div class="contact-detail-val">+44 7587 476393</div></div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">💬</div>
+          <div><div class="contact-detail-label">WhatsApp</div><a href="https://wa.me/447587476393" target="_blank" class="contact-detail-val" style="color:var(--white)">Message Us on WhatsApp</a></div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">📍</div>
+          <div><div class="contact-detail-label">Location</div><div class="contact-detail-val">United Kingdom</div></div>
+        </div>
+        <div class="contact-detail" style="border:none">
+          <div class="contact-icon">🕐</div>
+          <div><div class="contact-detail-label">Hours</div><div class="contact-detail-val">Mon–Sat: 9am–7pm</div></div>
+        </div>
       </div>
     </div>
-    <div class="sell-form-box">
+    <div class="sell-form-box" data-aos="fade-left" data-aos-delay="200">
       <h3>Send an Enquiry</h3>
       <div class="form-group"><label>Your Name</label><input type="text" id="cName" placeholder="Full name"></div>
       <div class="form-group"><label>Email or Phone</label><input type="text" id="cContact" placeholder="Email or phone number"></div>
       <div class="form-group"><label>Message</label><textarea id="cMsg" placeholder="How can we help you?"></textarea></div>
-      <button class="btn-gold" style="width:100%;padding:14px" onclick="submitContact()">Send Message →</button>
+      <button class="btn-gold" style="width:100%;padding:14px" onclick="submitContact()"><span>Send Message →</span></button>
     </div>
   </div>
 </section>
 
+<!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
 <footer>
   <div class="footer-grid">
-    <div class="footer-brand"><h3>Prestige<span>Motors</span></h3><p>The UK's trusted source for premium pre-owned vehicles. Every car, every deal — done right.</p></div>
-    <div class="footer-col"><h4>Navigation</h4><ul><li><a href="#inventory">Browse Cars</a></li><li><a href="#sell">Sell Your Car</a></li><li><a href="#contact">Contact</a></li><li><a href="/admin.html">Admin Login</a></li></ul></div>
-    <div class="footer-col"><h4>Popular Searches</h4><ul><li><a href="#">BMW For Sale</a></li><li><a href="#">Mercedes-Benz</a></li><li><a href="#">Range Rover</a></li><li><a href="#">Audi A6 / A8</a></li><li><a href="#">Porsche Cayenne</a></li></ul></div>
-    <div class="footer-col"><h4>Contact</h4><p style="font-size:.82rem;color:var(--muted);line-height:1.8">📞 <a href="tel:+447587476393" style="color:var(--gold)">+44 7587 476393</a><br><br>💬 <a href="https://wa.me/447587476393" target="_blank" style="color:var(--gold)">WhatsApp Us</a><br><br>📍 United Kingdom<br><br>🕐 Mon–Sat: 9am–7pm</p></div>
+    <div class="footer-brand">
+      <h3>Prestige<span>Motors</span></h3>
+      <p>The UK's trusted source for premium pre-owned vehicles. Every car, every deal — done right.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#inventory">Browse Cars</a></li>
+        <li><a href="#about">Why Us</a></li>
+        <li><a href="#sell">Sell Your Car</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="/admin.html">Admin Login</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Popular Searches</h4>
+      <ul>
+        <li><a href="#">BMW For Sale</a></li>
+        <li><a href="#">Mercedes-Benz</a></li>
+        <li><a href="#">Range Rover</a></li>
+        <li><a href="#">Audi A6 / A8</a></li>
+        <li><a href="#">Porsche Cayenne</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+447587476393">📞 +44 7587 476393</a></li>
+        <li><a href="https://wa.me/447587476393" target="_blank">💬 WhatsApp Us</a></li>
+        <li><a href="#">📍 United Kingdom</a></li>
+        <li><a href="#">🕐 Mon–Sat 9am–7pm</a></li>
+      </ul>
+    </div>
   </div>
-  <div class="footer-bottom"><span>© 2025 PrestigeMotors UK. All rights reserved. FCA Authorised & Regulated.</span><span style="display:flex;gap:1.5rem"><a href="#">Privacy Policy</a><a href="#">Terms</a></span></div>
+  <div class="footer-bottom">
+    <span>© 2025 PrestigeMotors UK. All rights reserved. FCA Authorised &amp; Regulated.</span>
+    <span style="display:flex;gap:1.5rem"><a href="#">Privacy Policy</a><a href="#">Terms</a></span>
+  </div>
 </footer>
 
-<!-- CAR MODAL -->
+<!-- ═══ CAR MODAL ══════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="carModal">
   <div class="modal">
-    <div class="modal-header"><h2 id="modalTitle">Vehicle Details</h2><button class="modal-close" onclick="closeModal('carModal')">✕</button></div>
+    <div class="modal-header">
+      <h2 id="modalTitle">Vehicle Details</h2>
+      <button class="modal-close" onclick="closeModal('carModal')">✕</button>
+    </div>
     <div class="modal-body">
       <div class="modal-car-grid">
         <div>
@@ -461,10 +765,16 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
           <div class="modal-specs-grid" id="modalSpecs"></div>
         </div>
         <div>
-          <div style="margin-bottom:14px"><div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Asking Price</div><div id="modalPrice" style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--white)"></div></div>
-          <p id="modalDesc" style="color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:20px"></p>
+          <div style="margin-bottom:16px">
+            <div style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">Asking Price</div>
+            <div id="modalPrice" style="font-family:var(--font-serif);font-size:2.2rem;color:var(--white)"></div>
+          </div>
+          <p id="modalDesc" style="color:var(--muted);font-size:.88rem;line-height:1.75;margin-bottom:20px"></p>
           <div class="modal-btns">
-            <button class="btn-wa" id="modalWABtn"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Enquire via WhatsApp</button>
+            <button class="btn-wa" id="modalWABtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Enquire via WhatsApp
+            </button>
             <button class="btn-enquire" onclick="document.getElementById('enquiryWrap').classList.toggle('open')">📧 Send Email Enquiry</button>
           </div>
           <div class="enquiry-wrap" id="enquiryWrap">
@@ -472,7 +782,7 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
             <div class="form-group"><label>Your Name</label><input type="text" id="eqName" placeholder="Full name"></div>
             <div class="form-group"><label>Email or Phone</label><input type="text" id="eqContact" placeholder="Email or phone"></div>
             <div class="form-group"><label>Message (optional)</label><textarea id="eqMsg" placeholder="Any questions?"></textarea></div>
-            <button class="btn-gold" style="width:100%;padding:12px" onclick="submitEnquiry()">Send →</button>
+            <button class="btn-gold" style="width:100%;padding:12px" onclick="submitEnquiry()"><span>Send →</span></button>
           </div>
         </div>
       </div>
@@ -480,12 +790,15 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
   </div>
 </div>
 
-<!-- SELL MODAL -->
+<!-- ═══ SELL MODAL ═════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="sellModal">
   <div class="modal">
-    <div class="modal-header"><h2>Sell Your Car</h2><button class="modal-close" onclick="closeModal('sellModal')">✕</button></div>
+    <div class="modal-header">
+      <h2>Sell Your Car</h2>
+      <button class="modal-close" onclick="closeModal('sellModal')">✕</button>
+    </div>
     <div class="modal-body">
-      <p style="color:var(--muted);margin-bottom:20px;font-size:.88rem;line-height:1.7">Fill in the details and upload photos. Our team reviews every submission within 24 hours.</p>
+      <p style="color:var(--muted);margin-bottom:20px;font-size:.88rem;line-height:1.75">Fill in the details and upload photos. Our team reviews every submission within 24 hours.</p>
       <div class="form-row">
         <div class="form-group"><label>Your Name *</label><input type="text" id="msName" placeholder="Full name"></div>
         <div class="form-group"><label>Phone/WhatsApp *</label><input type="tel" id="msPhone" placeholder="+44 7xxx xxxxxx"></div>
@@ -503,7 +816,7 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
         <div class="form-group"><label>Asking Price (£)</label><input type="number" id="msPrice" placeholder="18000"></div>
         <div class="form-group"><label>Registration</label><input type="text" id="msReg" placeholder="AB21 XYZ"></div>
       </div>
-      <div class="form-group"><label>Additional Info</label><textarea id="msNotes" placeholder="Service history, condition, extras..."></textarea></div>
+      <div class="form-group"><label>Additional Info</label><textarea id="msNotes" placeholder="Service history, condition, extras…"></textarea></div>
       <div class="form-group">
         <label>Car Photos (up to 8 images)</label>
         <div class="img-upload-zone" id="msUploadZone">
@@ -513,38 +826,38 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:60px 5%
         </div>
         <div class="img-preview-grid" id="msPreviewGrid"></div>
       </div>
-      <button class="btn-gold" style="width:100%;padding:14px" onclick="submitModalSell()">Submit for Approval →</button>
+      <button class="btn-gold" style="width:100%;padding:14px" onclick="submitModalSell()"><span>Submit for Approval →</span></button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div id="toastMsg"></div></div>
+<!-- ═══ TOAST ══════════════════════════════════════════════════════ -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastTitle"></div>
+  <div id="toastMsg"></div>
+</div>
 
+<!-- ═══ CORE JS ════════════════════════════════════════════════════ -->
 <script>
-const API = '';  // same origin
+const API = '';
 const ADMIN_WA = '+447587476393';
 let activeChip = '';
 let carPage = 1;
 const PAGE_SIZE = 9;
 let allLoadedCars = [];
 let currentCar = null;
-let sellImagesFiles = [];
-let msSellImagesFiles = [];
+let sellFiles = [];
+let modalSellFiles = [];
 let debounceTimer = null;
 
-// ── API HELPER ───────────────────────────────
 async function api(path, opts={}) {
   try {
     const r = await fetch(API + path, opts);
     if (!r.ok) throw new Error(await r.text());
     return await r.json();
-  } catch(e) {
-    console.error(e);
-    return null;
-  }
+  } catch(e) { console.error(e); return null; }
 }
 
-// ── LOAD CARS ───────────────────────────────
 async function loadCars(reset=true) {
   if (reset) { carPage = 1; allLoadedCars = []; }
   const make  = document.getElementById('filterMake').value;
@@ -560,7 +873,7 @@ async function loadCars(reset=true) {
   const cars = await api(url);
   if (!cars) { showError(); return; }
   allLoadedCars = cars;
-  document.getElementById('heroListings').innerHTML = `${cars.length}<span>+</span>`;
+  document.getElementById('heroListings').innerHTML = `${cars.length}<span style="color:var(--gold)">+</span>`;
   renderCarGrid();
 }
 
@@ -577,18 +890,17 @@ function setChip(el, filter) {
   loadCars();
 }
 
-function loadMore() {
-  carPage++;
-  renderCarGrid();
-}
+function loadMore() { carPage++; renderCarGrid(); }
 
 function renderCarGrid() {
   const grid = document.getElementById('carGrid');
-  const start = (carPage - 1) * PAGE_SIZE;
   const slice = allLoadedCars.slice(0, carPage * PAGE_SIZE);
   grid.innerHTML = '';
   if (slice.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No vehicles match your search. <button class="btn-outline" style="margin-left:1rem" onclick="resetFilters()">Clear Filters</button></div>';
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">
+      No vehicles match your search.
+      <button class="btn-ghost" style="margin-left:1rem;padding:8px 20px;font-size:.72rem" onclick="resetFilters()">Clear Filters</button>
+    </div>`;
     document.getElementById('loadMoreBtn').style.display = 'none';
     return;
   }
@@ -597,12 +909,13 @@ function renderCarGrid() {
     const imgSrc = car.primary_image || fallback;
     const el = document.createElement('div');
     el.className = 'car-card';
-    const badgeCls = car.badge === 'New' ? 'new-badge' : '';
+    const badgeClass = car.badge === 'New' ? 'new-badge' : car.badge === 'Premium' ? 'premium-badge' : '';
     el.innerHTML = `
       <div class="car-img" onclick="openCarModal(${car.id})">
-        <img src="${imgSrc}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'">
-        ${car.badge ? `<span class="car-badge ${badgeCls}">${car.badge}</span>` : ''}
+        <img src="${imgSrc}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'" loading="lazy">
+        ${car.badge ? `<span class="car-badge ${badgeClass}">${car.badge}</span>` : ''}
         <div class="car-fav" onclick="event.stopPropagation();this.innerHTML=this.innerHTML==='♡'?'♥':'♡';this.style.color=this.innerHTML==='♥'?'var(--gold)':''">♡</div>
+        <div class="car-img-overlay"><span class="overlay-cta">View Details</span></div>
       </div>
       <div class="car-info">
         <div class="car-make">${car.make}</div>
@@ -615,9 +928,15 @@ function renderCarGrid() {
           <span class="spec-pill">${car.body_type||'—'}</span>
         </div>
         <div class="car-footer">
-          <div class="car-price"><small>Asking Price</small>£${Number(car.price).toLocaleString()}</div>
+          <div class="car-price">
+            <small>Asking Price</small>
+            <div class="car-price-val">£${Number(car.price).toLocaleString()}</div>
+          </div>
           <div class="car-actions">
-            <button class="btn-sm btn-sm-wa" onclick="openWhatsApp('Hi! I am interested in the ${car.year} ${car.make} ${car.model} listed for £${Number(car.price).toLocaleString()} (Reg: ${car.reg||'N/A'}). Is it still available?')"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp</button>
+            <button class="btn-sm btn-sm-wa" onclick="openWhatsApp('Hi! I am interested in the ${car.year} ${car.make} ${car.model} listed for £${Number(car.price).toLocaleString()} (Reg: ${car.reg||'N/A'}). Is it still available?')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WA
+            </button>
             <button class="btn-sm btn-sm-gold" onclick="openCarModal(${car.id})">View</button>
           </div>
         </div>
@@ -625,6 +944,14 @@ function renderCarGrid() {
     grid.appendChild(el);
   });
   document.getElementById('loadMoreBtn').style.display = allLoadedCars.length > carPage * PAGE_SIZE ? 'inline-block' : 'none';
+
+  // Animate new cards
+  if (typeof gsap !== 'undefined') {
+    gsap.fromTo(grid.querySelectorAll('.car-card'),
+      { opacity:0, y:30 },
+      { opacity:1, y:0, duration:.55, stagger:.08, ease:'power2.out', delay:.05 }
+    );
+  }
 }
 
 function showSkeletons() {
@@ -634,8 +961,9 @@ function showSkeletons() {
       <div class="skeleton skeleton-img"></div>
       <div class="skeleton-body">
         <div class="skeleton skeleton-line" style="width:40%"></div>
-        <div class="skeleton skeleton-line" style="width:70%;height:20px"></div>
+        <div class="skeleton skeleton-line" style="width:72%;height:20px;margin-bottom:14px"></div>
         <div class="skeleton skeleton-line" style="width:90%"></div>
+        <div class="skeleton skeleton-line" style="width:60%;margin-top:8px"></div>
       </div>
     </div>`).join('');
 }
@@ -643,16 +971,12 @@ function showError() {
   document.getElementById('carGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">Could not load cars. Please try again.</div>';
 }
 function resetFilters() {
-  document.getElementById('filterMake').value = '';
-  document.getElementById('filterType').value = '';
-  document.getElementById('filterPrice').value = '';
-  document.getElementById('filterKeyword').value = '';
+  ['filterMake','filterType','filterPrice','filterKeyword'].forEach(id => document.getElementById(id).value='');
   activeChip = '';
-  document.querySelectorAll('.chip').forEach((c,i) => { if(i===0) c.classList.add('active'); else c.classList.remove('active'); });
+  document.querySelectorAll('.chip').forEach((c,i)=>{ if(i===0) c.classList.add('active'); else c.classList.remove('active'); });
   loadCars();
 }
 
-// ── CAR MODAL ────────────────────────────────
 async function openCarModal(id) {
   const car = await api(`/api/cars/${id}`);
   if (!car) return;
@@ -661,16 +985,13 @@ async function openCarModal(id) {
   document.getElementById('modalPrice').textContent = `£${Number(car.price).toLocaleString()}`;
   document.getElementById('modalDesc').textContent = car.description || '';
   const fallback = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format';
-  const images = car.images && car.images.length ? car.images : [{data_url: fallback, is_primary:1}];
-  const primary = images.find(i => i.is_primary) || images[0];
-  const mainImg = document.getElementById('modalMainImg');
-  mainImg.innerHTML = `<img src="${primary.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'">`;
-  // Thumbnails
+  const images = car.images && car.images.length ? car.images : [{data_url:fallback,is_primary:1}];
+  const primary = images.find(i=>i.is_primary)||images[0];
+  document.getElementById('modalMainImg').innerHTML = `<img src="${primary.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'">`;
   const thumbs = document.getElementById('modalThumbs');
-  if (images.length > 1) {
-    thumbs.innerHTML = images.map((img,i) => `<div class="modal-thumb ${img.is_primary?'active':''}" onclick="switchModalImg(this,'${img.data_url}')"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`).join('');
-  } else { thumbs.innerHTML = ''; }
-  // Specs
+  thumbs.innerHTML = images.length > 1
+    ? images.map((img,i)=>`<div class="modal-thumb ${img.is_primary?'active':''}" onclick="switchModalImg(this,'${img.data_url}')"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`).join('')
+    : '';
   document.getElementById('modalSpecs').innerHTML = `
     <div class="spec-item"><div class="key">Year</div><div class="val">${car.year}</div></div>
     <div class="spec-item"><div class="key">Mileage</div><div class="val">${car.mileage||'—'}</div></div>
@@ -680,14 +1001,14 @@ async function openCarModal(id) {
     <div class="spec-item"><div class="key">Colour</div><div class="val">${car.colour||'—'}</div></div>
     <div class="spec-item"><div class="key">Body</div><div class="val">${car.body_type||'—'}</div></div>
     <div class="spec-item"><div class="key">Reg</div><div class="val">${car.reg||'POA'}</div></div>`;
-  const waMsg = `Hi! I am interested in the ${car.year} ${car.make} ${car.model} listed for £${Number(car.price).toLocaleString()} (Reg: ${car.reg||'N/A'}). Is it still available? Could you provide more details?`;
+  const waMsg = `Hi! I am interested in the ${car.year} ${car.make} ${car.model} for £${Number(car.price).toLocaleString()} (Reg: ${car.reg||'N/A'}). Is it still available?`;
   document.getElementById('modalWABtn').onclick = () => openWhatsApp(waMsg);
   document.getElementById('enquiryWrap').classList.remove('open');
   document.getElementById('carModal').classList.add('active');
 }
 
 function switchModalImg(el, src) {
-  document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.modal-thumb').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('modalMainImg').querySelector('img').src = src;
 }
@@ -699,26 +1020,22 @@ async function submitEnquiry() {
   if (!name || !contact) { showToast('Missing', 'Please enter your name and contact details.'); return; }
   await api('/api/enquiries', {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ car_id: currentCar.id, name, contact, message: document.getElementById('eqMsg').value })
+    body: JSON.stringify({ car_id:currentCar.id, name, contact, message:document.getElementById('eqMsg').value })
   });
   closeModal('carModal');
   showToast('Enquiry Sent!', `Thanks ${name}, we'll be in touch shortly.`);
 }
 
-// ── IMAGE UPLOAD HANDLING ────────────────────
-let sellFiles = [];
-let modalSellFiles = [];
-
 function handleSellImages(input, prefix='sell') {
   const files = Array.from(input.files).slice(0, 8);
-  if (prefix === 'sell') { sellFiles = files; renderPreviews(files, 'sellPreviewGrid', 'sell'); }
-  else { modalSellFiles = files; renderPreviews(files, 'msPreviewGrid', 'ms'); }
+  if (prefix === 'sell') { sellFiles = files; renderPreviews(files,'sellPreviewGrid','sell'); }
+  else { modalSellFiles = files; renderPreviews(files,'msPreviewGrid','ms'); }
 }
 
 function renderPreviews(files, gridId, prefix) {
   const grid = document.getElementById(gridId);
   grid.innerHTML = '';
-  files.forEach((f, i) => {
+  files.forEach((f,i) => {
     const reader = new FileReader();
     reader.onload = e => {
       const item = document.createElement('div');
@@ -731,121 +1048,217 @@ function renderPreviews(files, gridId, prefix) {
 }
 
 function removeImg(idx, prefix) {
-  if (prefix === 'sell') { sellFiles.splice(idx,1); renderPreviews(sellFiles,'sellPreviewGrid','sell'); }
+  if (prefix==='sell') { sellFiles.splice(idx,1); renderPreviews(sellFiles,'sellPreviewGrid','sell'); }
   else { modalSellFiles.splice(idx,1); renderPreviews(modalSellFiles,'msPreviewGrid','ms'); }
 }
 
-// Drag & drop
 ['sellUploadZone','msUploadZone'].forEach(id => {
   const zone = document.getElementById(id);
   if (!zone) return;
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-  zone.addEventListener('drop', e => {
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', ()=>zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e=>{
     e.preventDefault(); zone.classList.remove('dragover');
-    const prefix = id === 'sellUploadZone' ? 'sell' : 'ms';
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).slice(0,8);
-    if (prefix === 'sell') { sellFiles = files; renderPreviews(files,'sellPreviewGrid','sell'); }
-    else { modalSellFiles = files; renderPreviews(files,'msPreviewGrid','ms'); }
+    const prefix = id==='sellUploadZone'?'sell':'ms';
+    const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')).slice(0,8);
+    if (prefix==='sell') { sellFiles=files; renderPreviews(files,'sellPreviewGrid','sell'); }
+    else { modalSellFiles=files; renderPreviews(files,'msPreviewGrid','ms'); }
   });
 });
 
-// ── SELL FORM ─────────────────────────────────
 async function buildSellFormData(prefix) {
   const fd = new FormData();
-  const g = (id) => document.getElementById(id)?.value?.trim() || '';
-  if (prefix === 'sell') {
-    fd.append('seller_name', g('sName'));
-    fd.append('seller_phone', g('sPhone'));
-    fd.append('seller_email', g('sEmail'));
-    fd.append('make', g('sMake'));
-    fd.append('model', g('sModel'));
-    fd.append('year', g('sYear'));
-    fd.append('mileage', g('sMileage'));
-    fd.append('asking_price', g('sPrice'));
-    fd.append('reg', g('sReg'));
-    fd.append('notes', g('sNotes'));
-    sellFiles.forEach(f => fd.append('images', f));
-  } else {
-    fd.append('seller_name', g('msName'));
-    fd.append('seller_phone', g('msPhone'));
-    fd.append('seller_email', g('msEmail'));
-    fd.append('make', g('msMake'));
-    fd.append('model', g('msModel'));
-    fd.append('year', g('msYear'));
-    fd.append('mileage', g('msMileage'));
-    fd.append('asking_price', g('msPrice'));
-    fd.append('reg', g('msReg'));
-    fd.append('notes', g('msNotes'));
-    modalSellFiles.forEach(f => fd.append('images', f));
-  }
+  const g = id => document.getElementById(id)?.value?.trim()||'';
+  const isS = prefix==='sell';
+  fd.append('seller_name',  g(isS?'sName':'msName'));
+  fd.append('seller_phone', g(isS?'sPhone':'msPhone'));
+  fd.append('seller_email', g(isS?'sEmail':'msEmail'));
+  fd.append('make',         g(isS?'sMake':'msMake'));
+  fd.append('model',        g(isS?'sModel':'msModel'));
+  fd.append('year',         g(isS?'sYear':'msYear'));
+  fd.append('mileage',      g(isS?'sMileage':'msMileage'));
+  fd.append('asking_price', g(isS?'sPrice':'msPrice'));
+  fd.append('reg',          g(isS?'sReg':'msReg'));
+  fd.append('notes',        g(isS?'sNotes':'msNotes'));
+  (isS?sellFiles:modalSellFiles).forEach(f=>fd.append('images',f));
   return fd;
 }
 
 async function submitSellForm() {
-  const name = document.getElementById('sName').value.trim();
-  const phone = document.getElementById('sPhone').value.trim();
-  const make = document.getElementById('sMake').value.trim();
-  const model = document.getElementById('sModel').value.trim();
-  if (!name || !phone || !make || !model) { showToast('Incomplete', 'Please fill in all required fields.'); return; }
-  const fd = await buildSellFormData('sell');
-  const res = await fetch('/api/submissions', { method: 'POST', body: fd });
-  if (res.ok) {
-    document.getElementById('sellFormWrap').style.display = 'none';
-    document.getElementById('sellSuccess').style.display = 'block';
-  } else {
-    showToast('Error', 'Submission failed. Please try again.');
-  }
+  const name=document.getElementById('sName').value.trim();
+  const phone=document.getElementById('sPhone').value.trim();
+  const make=document.getElementById('sMake').value.trim();
+  const model=document.getElementById('sModel').value.trim();
+  if (!name||!phone||!make||!model){showToast('Incomplete','Please fill in all required fields.');return;}
+  const fd=await buildSellFormData('sell');
+  const res=await fetch('/api/submissions',{method:'POST',body:fd});
+  if (res.ok){document.getElementById('sellFormWrap').style.display='none';document.getElementById('sellSuccess').style.display='block';}
+  else showToast('Error','Submission failed. Please try again.');
 }
 
 async function submitModalSell() {
-  const name = document.getElementById('msName').value.trim();
-  const phone = document.getElementById('msPhone').value.trim();
-  const make = document.getElementById('msMake').value.trim();
-  const model = document.getElementById('msModel').value.trim();
-  if (!name || !phone || !make || !model) { showToast('Incomplete', 'Please fill required fields.'); return; }
-  const fd = await buildSellFormData('ms');
-  const res = await fetch('/api/submissions', { method: 'POST', body: fd });
-  if (res.ok) {
-    closeModal('sellModal');
-    showToast('Submitted!', 'Your car listing is pending admin review. We\'ll be in touch within 24hrs.');
-  } else {
-    showToast('Error', 'Submission failed. Please try again.');
-  }
+  const name=document.getElementById('msName').value.trim();
+  const phone=document.getElementById('msPhone').value.trim();
+  const make=document.getElementById('msMake').value.trim();
+  const model=document.getElementById('msModel').value.trim();
+  if (!name||!phone||!make||!model){showToast('Incomplete','Please fill required fields.');return;}
+  const fd=await buildSellFormData('ms');
+  const res=await fetch('/api/submissions',{method:'POST',body:fd});
+  if (res.ok){closeModal('sellModal');showToast('Submitted!','Your listing is pending review. We\'ll be in touch within 24hrs.');}
+  else showToast('Error','Submission failed. Please try again.');
 }
 
 async function submitContact() {
-  const name = document.getElementById('cName').value.trim();
-  const msg  = document.getElementById('cMsg').value.trim();
-  if (!name || !msg) { showToast('Incomplete', 'Please fill in your name and message.'); return; }
-  await api('/api/enquiries', {
-    method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ name, contact: document.getElementById('cContact').value, message: msg })
-  });
-  showToast('Message Sent!', `Thanks ${name}, we'll get back to you soon.`);
-  ['cName','cContact','cMsg'].forEach(id => document.getElementById(id).value = '');
+  const name=document.getElementById('cName').value.trim();
+  const msg=document.getElementById('cMsg').value.trim();
+  if (!name||!msg){showToast('Incomplete','Please fill in your name and message.');return;}
+  await api('/api/enquiries',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name,contact:document.getElementById('cContact').value,message:msg})});
+  showToast('Message Sent!',`Thanks ${name}, we'll get back to you soon.`);
+  ['cName','cContact','cMsg'].forEach(id=>document.getElementById(id).value='');
 }
 
-// ── UTILITIES ─────────────────────────────────
 function openWhatsApp(msg) {
-  const num = ADMIN_WA.replace(/\D/g,'');
-  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+  window.open(`https://wa.me/${ADMIN_WA.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank');
 }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('active'); }));
-function showToast(title, msg, dur=4200) {
-  document.getElementById('toastTitle').textContent = title;
-  document.getElementById('toastMsg').textContent = msg;
-  const t = document.getElementById('toast');
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active')}));
+function showToast(title,msg,dur=4200){
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+  setTimeout(()=>t.classList.remove('show'),dur);
 }
-window.addEventListener('scroll', () => {
-  document.getElementById('mainNav').style.background = window.scrollY > 50 ? 'rgba(8,8,8,.98)' : 'rgba(8,8,8,.92)';
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 80);
 });
 
-// ── INIT ──────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => loadCars());
+window.addEventListener('DOMContentLoaded',()=>loadCars());
+</script>
+
+<!-- ═══ ANIMATION LIBRARIES ════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+// ── CUSTOM CURSOR ─────────────────────────────
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let mouseX=0,mouseY=0,ringX=0,ringY=0;
+document.addEventListener('mousemove',e=>{
+  mouseX=e.clientX; mouseY=e.clientY;
+  cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px';
+});
+(function animateRing(){
+  ringX += (mouseX-ringX)*.12;
+  ringY += (mouseY-ringY)*.12;
+  cursorRing.style.left=ringX+'px';cursorRing.style.top=ringY+'px';
+  requestAnimationFrame(animateRing);
+})();
+
+// ── HERO CANVAS PARTICLES ─────────────────────
+const canvas=document.getElementById('heroCanvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight}
+resizeCanvas();window.addEventListener('resize',()=>{resizeCanvas();initParticles()});
+
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.size=Math.random()*1.5+.3;
+    this.speedX=(Math.random()-.5)*.3;
+    this.speedY=(Math.random()-.5)*.3;
+    this.opacity=Math.random()*.4+.05;
+    this.life=0;this.maxLife=Math.random()*200+100;
+  }
+  update(){
+    this.x+=this.speedX;this.y+=this.speedY;this.life++;
+    if(this.life>this.maxLife||this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height) this.reset();
+  }
+  draw(){
+    ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    const fade=Math.sin((this.life/this.maxLife)*Math.PI);
+    ctx.fillStyle=`rgba(201,168,76,${this.opacity*fade})`;ctx.fill();
+  }
+}
+
+function initParticles(){particles=Array.from({length:80},()=>new Particle())}
+initParticles();
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Draw connections
+  particles.forEach((p,i)=>{
+    particles.slice(i+1).forEach(p2=>{
+      const dx=p.x-p2.x,dy=p.y-p2.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p2.x,p2.y);
+        ctx.strokeStyle=`rgba(201,168,76,${.04*(1-dist/120)})`;ctx.lineWidth=.5;ctx.stroke();
+      }
+    });
+    p.update();p.draw();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ── AOS INIT ──────────────────────────────────
+AOS.init({duration:750,easing:'ease-out-cubic',once:true,offset:55});
+
+// ── GSAP — PAGE LOADER ────────────────────────
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('pageLoader').classList.add('done');
+    // Hero entrance
+    const tl=gsap.timeline({defaults:{ease:'power3.out'}});
+    tl.to('.hero-eyebrow',{opacity:1,x:0,duration:.7})
+      .to('.hero-headline .line-inner',{y:'0%',duration:.85,stagger:.12},'-=.4')
+      .to('.hero-sub',{opacity:1,y:0,duration:.7},'-=.5')
+      .to('.hero-actions',{opacity:1,y:0,duration:.6},'-=.45')
+      .to('.hero-stats',{opacity:1,y:0,duration:.6},'-=.4')
+      .to('.hero-visual',{opacity:.88,x:0,duration:1.1,ease:'power2.out'},'-=.9');
+
+    gsap.set('.hero-visual',{x:50,opacity:0});
+  },1700);
+});
+
+// ── GSAP SCROLL NAV ───────────────────────────
+gsap.registerPlugin(ScrollTrigger);
+
+// Section title word reveals
+document.querySelectorAll('.section-title').forEach(el=>{
+  gsap.from(el,{
+    scrollTrigger:{trigger:el,start:'top 88%'},
+    opacity:0,y:30,duration:.8,ease:'power3.out'
+  });
+});
+
+// ── COUNTER ANIMATION ─────────────────────────
+function countUp(el,target,decimals=0,suffix=''){
+  const obj={val:0};
+  gsap.to(obj,{
+    val:target,duration:2.2,ease:'power1.out',
+    onUpdate(){
+      el.innerHTML = obj.val.toFixed(decimals)+suffix;
+    }
+  });
+}
+
+ScrollTrigger.create({
+  trigger:'.hero-stats',start:'top 90%',once:true,
+  onEnter(){
+    const yrsEl=document.getElementById('statYrs');
+    const buyEl=document.getElementById('statBuyers');
+    countUp(yrsEl,12,0,'<span style="color:var(--gold)">yr</span>');
+    setTimeout(()=>countUp(buyEl,1200,0,'<span style="color:var(--gold)">+</span>'),300);
+  }
+});
 </script>
 </body>
 </html>
