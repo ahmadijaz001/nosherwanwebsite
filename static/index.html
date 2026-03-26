@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <style>
 /* ─── TOKENS ──────────────────────────────────────────────────────── */
 :root{
@@ -352,6 +353,208 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 .toast.show{transform:translateY(0)}
 .toast-title{color:var(--gold);font-weight:500;margin-bottom:4px;font-size:.88rem}
 
+/* ─── THEME TRANSITION ───────────────────────────────────────────── */
+body,nav,footer,.car-card,.feat-card,.feature-item,.testimonial-card,
+.sell-form-box,.modal,.search-field,.form-group input,.form-group select,
+.form-group textarea,.marquee-bar,.alert-bar,.sell-step,.contact-detail,
+.toast,.chip,.spec-pill,.feat-spec,.img-upload-zone{
+  transition:background-color .4s ease,border-color .3s ease,color .3s ease,box-shadow .3s ease;
+}
+
+/* ─── LIGHT MODE VARIABLES ───────────────────────────────────────── */
+body.light{
+  --black:#f8f7f3;
+  --deep:#f1ede8;
+  --surface:#eae6e0;
+  --card:#ffffff;
+  --card2:#f6f3ef;
+  --border:rgba(0,0,0,.09);
+  --border2:rgba(140,100,28,.2);
+  --gold:#9a6e1a;
+  --gold-light:#b8891f;
+  --gold-dim:rgba(154,110,26,.07);
+  --gold-glow:rgba(154,110,26,.18);
+  --white:#0d0d0d;
+  --muted:#777777;
+  --text:#444444;
+}
+/* Nav in light */
+body.light nav{background:rgba(248,246,242,.94) !important;border-color:rgba(0,0,0,.08) !important}
+body.light nav.scrolled{background:rgba(248,246,242,.98) !important;border-color:rgba(0,0,0,.12) !important}
+/* Hero & showcase always stay readable over photos */
+body.light .hero-headline,
+body.light .hero-headline em,
+body.light .hero-eyebrow span,
+body.light .hero-sub,
+body.light .stat-num,body.light .stat-label{color:#f5f3ef !important}
+body.light .hero-stats{border-color:rgba(255,255,255,.15) !important}
+body.light .hero-video-overlay{background:linear-gradient(135deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.6) 100%) !important}
+body.light .showcase-content h2,
+body.light .showcase-content h2 em,
+body.light .showcase-content p{color:rgba(255,255,255,.92) !important}
+body.light .showcase-content .section-eyebrow span{color:var(--gold-light) !important}
+/* Skeleton */
+body.light .skeleton{background:linear-gradient(90deg,#e6e2dc 25%,#efeae4 50%,#e6e2dc 75%);background-size:200% 100%}
+/* Scrollbar */
+body.light ::-webkit-scrollbar-track{background:#f8f7f3}
+/* Card shadows in light */
+body.light .car-card:hover{box-shadow:0 20px 50px rgba(0,0,0,.1),0 0 0 1px rgba(140,100,28,.12) !important}
+body.light .feat-card:hover{box-shadow:0 20px 50px rgba(0,0,0,.1),0 0 0 1px rgba(140,100,28,.12) !important}
+/* Logo text */
+body.light .logo-text{color:#0d0d0d}
+/* Page loader */
+body.light #pageLoader{background:#f8f7f3}
+body.light .loader-bar{background:rgba(0,0,0,.1)}
+/* Section eyebrow line */
+body.light .section-eyebrow .line,
+body.light .hero-eyebrow .gold-line{background:var(--gold) !important}
+/* Gold top bar on cards */
+body.light .car-card:hover::before,
+body.light .feat-card:hover::before,
+body.light .sell-form-box::before,
+body.light .modal::before{background:linear-gradient(90deg,transparent,var(--gold),transparent) !important}
+/* Search section */
+body.light .search-btn{background:var(--gold);color:#fff}
+body.light .search-btn:hover{background:var(--gold-light)}
+/* Overlay dots on car image */
+body.light .car-img-overlay,.feat-img-overlay{background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.65) 100%) !important}
+/* Alert bar stays gold */
+body.light .alert-bar{color:#fff}
+body.light .alert-bar a{color:#fff}
+/* Marquee text */
+body.light .marquee-item{color:#555}
+
+/* ─── THEME TOGGLE BUTTON ────────────────────────────────────────── */
+.theme-toggle{
+  position:relative;width:54px;height:28px;border-radius:14px;border:none;cursor:none;
+  background:var(--card2);border:1px solid var(--border2);
+  transition:background .3s,border-color .3s;flex-shrink:0;
+}
+.theme-toggle:hover{border-color:var(--gold)}
+.toggle-track{
+  position:absolute;inset:2px;border-radius:12px;
+  background:linear-gradient(135deg,#1a1a1a,#2a2a2a);
+  transition:background .35s;overflow:hidden;
+}
+body.light .toggle-track{background:linear-gradient(135deg,#c8e6ff,#7bb8e8)}
+.toggle-thumb{
+  position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--gold);display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;transition:transform .35s var(--ease-luxury),background .3s;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+body.light .toggle-thumb{transform:translateX(24px);background:#fff}
+.toggle-icon{line-height:1;font-size:.7rem}
+
+/* ─── HERO SLIDESHOW ─────────────────────────────────────────────── */
+.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-slide{
+  position:absolute;inset:-8%;
+  background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.8s ease-in-out;
+  animation:kenBurns 14s ease-in-out infinite;
+}
+.hero-slide.active{opacity:.42}
+.hero-slide:nth-child(even){animation-direction:alternate-reverse}
+@keyframes kenBurns{
+  0%{transform:scale(1) translate(0,0)}
+  100%{transform:scale(1.12) translate(-2.5%,-1.5%)}
+}
+.hero-video-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(135deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.48) 60%,rgba(0,0,0,.7) 100%);
+}
+
+/* ─── FEATURED CAROUSEL ───────────────────────────────────────────── */
+.carousel-section{padding:90px 0 90px;background:var(--surface);overflow:hidden}
+.carousel-section .section-head{padding:0 6%;margin-bottom:3rem}
+.swiper-featured{padding:0 6% 3rem !important}
+.swiper-featured .swiper-slide{width:360px !important}
+.feat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;transition:border-color .4s,transform .4s var(--ease-luxury),box-shadow .4s;
+  cursor:none;position:relative;
+}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-8px);box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px rgba(201,168,76,.1)}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transform-origin:center;transition:transform .4s var(--ease-luxury);z-index:2}
+.feat-card:hover::before{transform:scaleX(1)}
+.feat-img{position:relative;height:250px;overflow:hidden;background:#0a0a0a}
+.feat-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-luxury)}
+.feat-card:hover .feat-img img{transform:scale(1.08)}
+.feat-img-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.75) 100%)}
+.feat-badge{position:absolute;top:14px;left:14px;z-index:1;background:var(--gold);color:var(--black);font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:4px 11px;border-radius:2px}
+.feat-badge.nb{background:var(--green);color:#fff}
+.feat-info{padding:22px 20px 20px}
+.feat-make{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.feat-name{font-family:var(--font-serif);font-size:1.4rem;color:var(--white);font-weight:400;margin-bottom:12px}
+.feat-specs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:16px}
+.feat-spec{font-size:.63rem;color:var(--muted);border:1px solid var(--border);padding:3px 9px;border-radius:20px}
+.feat-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+.feat-price{font-family:var(--font-serif);font-size:1.55rem;color:var(--white)}
+.feat-price small{display:block;font-family:var(--font-sans);font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1px}
+.feat-btn{background:var(--gold);color:var(--black);border:none;padding:8px 16px;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border-radius:2px;cursor:none;transition:background .2s}
+.feat-btn:hover{background:var(--gold-light)}
+/* Swiper custom arrows */
+.swiper-btn-prev,.swiper-btn-next{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:10;
+  width:46px;height:46px;border:1px solid var(--border2);border-radius:50%;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;cursor:none;
+  color:var(--gold);font-size:1rem;transition:all .3s;
+}
+.swiper-btn-prev{left:16px}.swiper-btn-next{right:16px}
+.swiper-btn-prev:hover,.swiper-btn-next:hover{background:var(--gold);color:var(--black);border-color:var(--gold)}
+.swiper-btn-prev.swiper-button-disabled,.swiper-btn-next.swiper-button-disabled{opacity:.3;pointer-events:none}
+/* Swiper pagination */
+.swiper-featured .swiper-pagination-bullet{background:var(--muted);opacity:.5;width:6px;height:6px}
+.swiper-featured .swiper-pagination-bullet-active{background:var(--gold);opacity:1;width:22px;border-radius:3px}
+
+/* ─── CINEMATIC SHOWCASE ─────────────────────────────────────────── */
+.video-showcase{
+  position:relative;height:100vh;min-height:600px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.showcase-slides{position:absolute;inset:0;z-index:0}
+.showcase-slide{
+  position:absolute;inset:-8%;
+  background-size:cover;background-position:center;
+  opacity:0;transition:opacity 2s ease-in-out;
+  animation:showcaseKB 16s ease-in-out infinite;
+}
+.showcase-slide.active{opacity:1}
+@keyframes showcaseKB{
+  0%{transform:scale(1) translate(0,0)}
+  100%{transform:scale(1.1) translate(-2%,-2%)}
+}
+.showcase-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(135deg,rgba(0,0,0,.84) 0%,rgba(0,0,0,.42) 55%,rgba(0,0,0,.7) 100%);
+}
+.showcase-content{
+  position:relative;z-index:2;text-align:center;padding:0 5%;max-width:760px;
+}
+.showcase-content .section-eyebrow{justify-content:center;margin-bottom:1.5rem}
+.showcase-content h2{
+  font-family:var(--font-serif);font-size:clamp(2.8rem,5vw,5rem);font-weight:300;
+  color:var(--white);line-height:1.05;margin-bottom:1.4rem;
+}
+.showcase-content h2 em{font-style:italic;color:var(--gold)}
+.showcase-content p{font-size:1rem;color:rgba(255,255,255,.72);line-height:1.8;max-width:500px;margin:0 auto 2.5rem}
+.showcase-actions{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+/* Slide indicators */
+.showcase-dots{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  z-index:3;display:flex;gap:8px;align-items:center;
+}
+.showcase-dot{
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);
+  cursor:none;transition:all .35s;
+}
+.showcase-dot.active{width:24px;border-radius:3px;background:var(--gold)}
+/* Progress bar */
+.video-progress{position:absolute;bottom:0;left:0;right:0;z-index:3;height:2px;background:rgba(255,255,255,.08)}
+.video-progress-fill{height:100%;background:var(--gold);width:0;transition:width .4s linear}
+
 /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
 @media(max-width:1100px){.hero-visual{width:48%;opacity:.55}.features-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.sell-inner{grid-template-columns:1fr;gap:3rem}.contact-inner{grid-template-columns:1fr}}
 @media(max-width:768px){
@@ -402,6 +605,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-cta">
+    <button class="theme-toggle" id="themeToggle" title="Switch theme">
+      <div class="toggle-track">
+        <div class="toggle-thumb"><span class="toggle-icon" id="themeIcon">🌙</span></div>
+      </div>
+    </button>
     <button class="btn-ghost" onclick="openWhatsApp('Hello! I have a general enquiry about PrestigeMotors UK.')">WhatsApp Us</button>
     <button class="btn-gold" onclick="document.getElementById('sellModal').classList.add('active')"><span>Sell My Car</span></button>
   </div>
@@ -409,7 +617,14 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 
 <!-- ═══ HERO ════════════════════════════════════════════════════════ -->
 <section class="hero" id="home">
+  <div class="hero-slides" id="heroSlides">
+    <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80&auto=format')"></div>
+  </div>
   <canvas id="heroCanvas"></canvas>
+  <div class="hero-video-overlay"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">
@@ -511,6 +726,24 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
   </div>
 </div>
 
+<!-- ═══ FEATURED CAROUSEL ═════════════════════════════════════════ -->
+<div class="carousel-section" style="position:relative">
+  <div class="section-head" style="padding:0 6%;margin-bottom:3rem">
+    <div class="section-eyebrow" data-aos="fade-right">
+      <div class="line"></div><span>Hand-Picked Highlights</span>
+    </div>
+    <h2 class="section-title" data-aos="fade-up" data-aos-delay="80">Featured <em>Vehicles</em></h2>
+  </div>
+  <div class="swiper swiper-featured" id="featuredSwiper">
+    <div class="swiper-wrapper" id="featuredSwiperWrapper">
+      <!-- populated by JS -->
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+  <div class="swiper-btn-prev" id="featPrev" style="position:absolute;top:56%;left:10px;transform:translateY(-50%)">&#8592;</div>
+  <div class="swiper-btn-next" id="featNext" style="position:absolute;top:56%;right:10px;transform:translateY(-50%)">&#8594;</div>
+</div>
+
 <!-- ═══ INVENTORY ══════════════════════════════════════════════════ -->
 <section id="inventory">
   <div class="section-eyebrow" data-aos="fade-right">
@@ -566,6 +799,31 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
     </div>
   </div>
 </section>
+
+<!-- ═══ CINEMATIC SHOWCASE ════════════════════════════════════════ -->
+<div class="video-showcase" id="videoShowcase">
+  <div class="showcase-slides" id="showcaseSlides">
+    <div class="showcase-slide active" style="background-image:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=85&auto=format')"></div>
+    <div class="showcase-slide" style="background-image:url('https://images.unsplash.com/photo-1563720223185-11003d516935?w=1600&q=85&auto=format')"></div>
+    <div class="showcase-slide" style="background-image:url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1600&q=85&auto=format')"></div>
+    <div class="showcase-slide" style="background-image:url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=1600&q=85&auto=format')"></div>
+    <div class="showcase-slide" style="background-image:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=85&auto=format')"></div>
+  </div>
+  <div class="showcase-overlay"></div>
+  <div class="showcase-content">
+    <div class="section-eyebrow" data-aos="fade-up">
+      <div class="line"></div><span>The PrestigeMotors Experience</span><div class="line"></div>
+    </div>
+    <h2 data-aos="fade-up" data-aos-delay="100">Feel the <em>Thrill</em><br>Before You Buy</h2>
+    <p data-aos="fade-up" data-aos-delay="200">Every vehicle in our collection is road-tested, detailed to perfection, and ready for its next owner.</p>
+    <div class="showcase-actions" data-aos="fade-up" data-aos-delay="300">
+      <button class="btn-gold" onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})"><span>Browse Collection</span></button>
+      <button class="btn-ghost" onclick="openWhatsApp('Hello! I would like to book a test drive.')">Book a Test Drive</button>
+    </div>
+  </div>
+  <div class="showcase-dots" id="showcaseDots"></div>
+  <div class="video-progress"><div class="video-progress-fill" id="videoProgressFill"></div></div>
+</div>
 
 <!-- ═══ SELL ═══════════════════════════════════════════════════════ -->
 <section class="sell-section" id="sell">
@@ -1136,9 +1394,28 @@ window.addEventListener('scroll',()=>{
 });
 
 window.addEventListener('DOMContentLoaded',()=>loadCars());
+
+// ── THEME TOGGLE ──────────────────────────────
+(function(){
+  const btn = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  const saved = localStorage.getItem('pm_theme');
+  if(saved === 'light'){ document.body.classList.add('light'); icon.textContent = '☀️'; }
+
+  btn.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light');
+    icon.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('pm_theme', isLight ? 'light' : 'dark');
+    // Re-tint particles if canvas is running
+    if(typeof particles !== 'undefined'){
+      particles.forEach(p => { p.opacity = isLight ? p.opacity * .5 : p.opacity; });
+    }
+  });
+})();
 </script>
 
 <!-- ═══ ANIMATION LIBRARIES ════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
@@ -1257,6 +1534,146 @@ ScrollTrigger.create({
     const buyEl=document.getElementById('statBuyers');
     countUp(yrsEl,12,0,'<span style="color:var(--gold)">yr</span>');
     setTimeout(()=>countUp(buyEl,1200,0,'<span style="color:var(--gold)">+</span>'),300);
+  }
+});
+
+// ── FEATURED CAROUSEL ─────────────────────────
+let featuredSwiper = null;
+
+async function loadFeaturedCarousel() {
+  const cars = await api('/api/cars?status=active');
+  if (!cars || !cars.length) return;
+  const fallback = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format';
+  const wrapper = document.getElementById('featuredSwiperWrapper');
+  // Use all cars, loop them in carousel
+  const picks = [...cars, ...cars].slice(0, Math.max(cars.length, 8));
+  wrapper.innerHTML = picks.map(car => {
+    const img = car.primary_image || fallback;
+    const badgeCls = car.badge === 'New' ? 'nb' : '';
+    return `<div class="swiper-slide">
+      <div class="feat-card" onclick="openCarModal(${car.id})">
+        <div class="feat-img">
+          <img src="${img}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'" loading="lazy">
+          <div class="feat-img-overlay"></div>
+          ${car.badge ? `<span class="feat-badge ${badgeCls}">${car.badge}</span>` : ''}
+        </div>
+        <div class="feat-info">
+          <div class="feat-make">${car.make}</div>
+          <div class="feat-name">${car.model}</div>
+          <div class="feat-specs">
+            <span class="feat-spec">${car.year}</span>
+            <span class="feat-spec">${car.mileage||'—'} mi</span>
+            <span class="feat-spec">${car.fuel||'—'}</span>
+            <span class="feat-spec">${car.transmission||'—'}</span>
+          </div>
+          <div class="feat-footer">
+            <div class="feat-price"><small>Asking Price</small>£${Number(car.price).toLocaleString()}</div>
+            <button class="feat-btn" onclick="event.stopPropagation();openCarModal(${car.id})">View →</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  featuredSwiper = new Swiper('#featuredSwiper', {
+    slidesPerView: 'auto',
+    spaceBetween: 24,
+    loop: cars.length > 2,
+    grabCursor: true,
+    autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
+    pagination: { el: '.swiper-featured .swiper-pagination', clickable: true },
+    navigation: { prevEl: '#featPrev', nextEl: '#featNext' },
+    breakpoints: {
+      0:    { slidesPerView: 1.15, spaceBetween: 16 },
+      600:  { slidesPerView: 2.1,  spaceBetween: 20 },
+      1024: { slidesPerView: 3,    spaceBetween: 24 },
+      1400: { slidesPerView: 3.5,  spaceBetween: 28 },
+    }
+  });
+}
+
+loadFeaturedCarousel();
+
+// ── HERO PHOTO SLIDESHOW ──────────────────────
+(function heroSlideshow() {
+  const slides = document.querySelectorAll('#heroSlides .hero-slide');
+  if (!slides.length) return;
+  let cur = 0;
+  setInterval(() => {
+    slides[cur].classList.remove('active');
+    cur = (cur + 1) % slides.length;
+    slides[cur].classList.add('active');
+  }, 5000);
+})();
+
+// ── CINEMATIC SHOWCASE SLIDESHOW ──────────────
+(function showcaseSlideshow() {
+  const slides = document.querySelectorAll('#showcaseSlides .showcase-slide');
+  const dotsEl = document.getElementById('showcaseDots');
+  const progressFill = document.getElementById('videoProgressFill');
+  if (!slides.length) return;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'showcase-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  let cur = 0;
+  const INTERVAL = 5000;
+  let startTime = Date.now();
+  let timer;
+
+  function goTo(idx) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = idx;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    startTime = Date.now();
+    progressFill.style.transition = 'none';
+    progressFill.style.width = '0%';
+    requestAnimationFrame(() => {
+      progressFill.style.transition = `width ${INTERVAL}ms linear`;
+      progressFill.style.width = '100%';
+    });
+  }
+
+  function next() { goTo((cur + 1) % slides.length); }
+
+  // Start progress bar
+  progressFill.style.transition = `width ${INTERVAL}ms linear`;
+  progressFill.style.width = '100%';
+
+  timer = setInterval(next, INTERVAL);
+
+  // Pause when not in view
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        timer = setInterval(next, INTERVAL);
+        progressFill.style.transition = `width ${INTERVAL}ms linear`;
+        progressFill.style.width = '100%';
+      } else {
+        clearInterval(timer);
+        progressFill.style.transition = 'none';
+        progressFill.style.width = '0%';
+      }
+    });
+  }, { threshold: 0.4 });
+  const el = document.getElementById('videoShowcase');
+  if (el) observer.observe(el);
+})();
+
+// ── SHOWCASE SECTION GSAP ENTRANCE ───────────
+ScrollTrigger.create({
+  trigger: '#videoShowcase',
+  start: 'top 85%',
+  once: true,
+  onEnter() {
+    gsap.from('.showcase-content', { opacity:0, y:50, duration:1.2, ease:'power3.out' });
   }
 });
 </script>
