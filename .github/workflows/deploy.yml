@@ -14,17 +14,42 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Pull latest code on PythonAnywhere
+      - name: Pull latest code on PythonAnywhere (SSH + Password)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ssh.pythonanywhere.com
           username: ${{ secrets.PA_USERNAME }}
-          key: ${{ secrets.PA_SSH_KEY }}
+          password: ${{ secrets.PA_PASSWORD }}
           port: 22
-          timeout: 60s
+          timeout: 120s
+          command_timeout: 10m
+          script_stop: true
           script: |
-            eval "$(ssh-agent -s)"
-            ssh-add ~/.ssh/id_rsa
             cd ~/nosherwanwebsite
             git pull origin main
+            pip install --user -r requirements.txt --quiet
             echo "Code updated successfully"
+
+      - name: Reload web app via PythonAnywhere API
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: Token ${{ secrets.PA_API_TOKEN }}" \
+            "https://www.pythonanywhere.com/api/v0/user/${{ secrets.PA_USERNAME }}/webapps/${{ secrets.PA_USERNAME }}.pythonanywhere.com/reload/")
+          echo "Reload API response: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Web app reload failed with status $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Web app reloaded successfully"
+
+      - name: Health check
+        run: |
+          sleep 10
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://${{ secrets.PA_USERNAME }}.pythonanywhere.com")
+          echo "Site health check: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Health check failed — site returned $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Site is live and healthy"
