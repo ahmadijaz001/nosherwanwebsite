@@ -40,8 +40,22 @@ jobs:
           upload "server.py"
           upload "wsgi.py"
           upload "requirements.txt"
+          upload "seed_images.py"
           upload "static/index.html"
           upload "static/admin.html"
+
+          echo "Uploading static/Hero.mp4 (large file, extended timeout)..."
+          STATUS=$(curl -s -o response.txt -w "%{http_code}" \
+            --max-time 300 \
+            -X POST \
+            -H "Authorization: Token ${PA_TOKEN}" \
+            -F "content=@static/Hero.mp4" \
+            "${BASE}/static/Hero.mp4")
+          echo "  HTTP $STATUS"
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ]; then
+            echo "  WARNING: Hero.mp4 upload returned $STATUS: $(cat response.txt)"
+            echo "  (Non-fatal: video may already exist on server)"
+          fi
 
           echo "All files uploaded successfully"
 
