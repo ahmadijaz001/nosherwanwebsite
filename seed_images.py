@@ -96,7 +96,7 @@ HEADERS = {'User-Agent': 'Mozilla/5.0 (PrestigeMotors seed script)'}
 
 def download_image(photo_id: str):
     url = UNSPLASH_BASE.format(id=photo_id)
-    print(f'    ↓ {url}')
+    print(f'    >> {url}')
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=40) as resp:
@@ -104,10 +104,10 @@ def download_image(photo_id: str):
             mime      = resp.getheader('Content-Type', 'image/jpeg').split(';')[0].strip()
             b64       = base64.b64encode(raw).decode('utf-8')
             size_kb   = len(raw) // 1024
-            print(f'       ✓  {size_kb} KB  ({mime})')
+            print(f'       OK  {size_kb} KB  ({mime})')
             return b64, mime
     except Exception as exc:
-        print(f'       ✗  failed: {exc}')
+        print(f'       FAILED: {exc}')
         return None, None
 
 
@@ -135,11 +135,11 @@ def seed():
         ).fetchone()[0]
 
         if existing >= 2:
-            print(f'  [{car_id}] {make} {model} — already has {existing} image(s). Skipping.')
+            print(f'  [{car_id}] {make} {model} - already has {existing} image(s). Skipping.')
             continue
 
         photo_set = PHOTO_SETS[idx % len(PHOTO_SETS)]
-        print(f'\n  [{car_id}] {make} {model} — downloading {len(photo_set)} images …')
+        print(f'\n  [{car_id}] {make} {model} - downloading {len(photo_set)} images ...')
 
         inserted = 0
         for order, photo_id in enumerate(photo_set):
@@ -155,13 +155,13 @@ def seed():
             inserted += 1
             time.sleep(0.25)   # be polite to CDN
 
-        print(f'       → inserted {inserted} image(s) for {make} {model}')
+        print(f'       -> inserted {inserted} image(s) for {make} {model}')
         seeded += 1
 
     conn.close()
-    print(f'\n✅  Done!  Seeded images for {seeded} car(s).')
+    print(f'\nDone! Seeded images for {seeded} car(s).')
     if seeded == 0:
-        print('    (All cars already had images — nothing was changed.)')
+        print('(All cars already had images - nothing was changed.)')
 
 
 if __name__ == '__main__':

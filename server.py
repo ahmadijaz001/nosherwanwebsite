@@ -221,9 +221,9 @@ def _seed_sample_images(db, car_ids):
                     (car_id, b64, mime, 1 if order==0 else 0, order)
                 )
                 db.commit()
-                print(f"  ✓ image {order+1}/4 → car {car_id}")
+                print(f"  OK image {order+1}/4 -> car {car_id}")
             except Exception as e:
-                print(f"  ✗ skipped photo {pid}: {e}")
+                print(f"  SKIP photo {pid}: {e}")
 
 # ─────────────────────────────────────────────
 # AUTH HELPERS
