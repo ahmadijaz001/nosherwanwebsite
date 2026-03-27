@@ -209,6 +209,23 @@ section{padding:110px 6%}
 .btn-sm-outline{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-sm-outline:hover{border-color:var(--gold);color:var(--gold)}
 .btn-sm-wa{background:#25D366;color:#fff;border:none;display:flex;align-items:center;gap:5px}.btn-sm-wa:hover{background:#1ebe5c}
 
+/* ─── CARD IMAGE CAROUSEL ─────────────────────────────────────────── */
+.car-img{position:relative;}
+.car-img .main-slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .38s ease;opacity:0}
+.car-img .main-slide-img.active{opacity:1}
+.car-img .main-slide-img.prev-out{opacity:0}
+.card-slide-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;pointer-events:none;opacity:0;transition:opacity .3s}
+.car-card:hover .card-slide-dots,.car-card.has-multi .card-slide-dots{opacity:1}
+.csdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .3s ease;flex-shrink:0}
+.csdot.active{background:var(--gold);width:16px;border-radius:3px}
+.card-slide-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:4;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);color:#fff;width:32px;height:32px;border-radius:50%;cursor:none;display:flex;align-items:center;justify-content:center;font-size:1.15rem;line-height:1;opacity:0;transition:opacity .25s,border-color .25s,color .25s;padding:0;font-family:sans-serif;font-weight:300}
+.car-card:hover .card-slide-btn{opacity:1}
+.card-slide-btn:hover{border-color:var(--gold)!important;color:var(--gold)!important}
+.card-slide-prev{left:10px}
+.card-slide-next{right:10px}
+.card-img-count{position:absolute;top:10px;right:52px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:rgba(255,255,255,.9);font-size:.58rem;padding:3px 8px;border-radius:10px;z-index:3;letter-spacing:.06em;display:none}
+.car-card.has-multi .card-img-count{display:block}
+
 /* ─── SKELETON ────────────────────────────────────────────────────── */
 .skeleton{background:linear-gradient(90deg,var(--card) 25%,#1c1c1c 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -332,9 +349,20 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 .modal-car-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem}
 .modal-main-img{border-radius:4px;overflow:hidden;height:265px;background:#0a0a0a;margin-bottom:8px}
 .modal-main-img img{width:100%;height:100%;object-fit:cover}
-.modal-thumb-row{display:flex;gap:6px;flex-wrap:wrap}
-.modal-thumb{width:62px;height:48px;border-radius:3px;overflow:hidden;cursor:none;border:2px solid transparent;transition:border-color .2s}
-.modal-thumb.active,.modal-thumb:hover{border-color:var(--gold)}
+.modal-img-gallery{margin-bottom:4px}
+.modal-car-swiper{border-radius:4px;overflow:hidden;height:300px;background:#0a0a0a;margin-bottom:10px;position:relative}
+.modal-car-swiper .swiper-slide{height:300px;overflow:hidden}
+.modal-car-swiper .swiper-slide img{width:100%;height:300px;object-fit:cover;display:block}
+.modal-swiper-prev,.modal-swiper-next{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;cursor:none;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:300;font-family:sans-serif;line-height:1;transition:border-color .2s,color .2s;padding:0;pointer-events:auto}
+.modal-swiper-prev{left:10px}
+.modal-swiper-next{right:10px}
+.modal-swiper-prev:hover,.modal-swiper-next:hover{border-color:var(--gold);color:var(--gold)}
+.modal-swiper-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5;pointer-events:auto}
+.msdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s ease;flex-shrink:0}
+.msdot.active{background:var(--gold);width:18px;border-radius:3px}
+.modal-thumb-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.modal-thumb{width:62px;height:48px;border-radius:3px;overflow:hidden;cursor:none;border:2px solid transparent;transition:border-color .2s,opacity .2s;opacity:.65}
+.modal-thumb.active,.modal-thumb:hover{border-color:var(--gold);opacity:1}
 .modal-thumb img{width:100%;height:100%;object-fit:cover}
 .modal-specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
 .spec-item .key{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
@@ -1018,8 +1046,15 @@ body.light .toggle-thumb{transform:translateX(24px);background:#fff}
     <div class="modal-body">
       <div class="modal-car-grid">
         <div>
-          <div class="modal-main-img"><img id="modalMainImg" src="" alt=""></div>
-          <div class="modal-thumb-row" id="modalThumbs"></div>
+          <div class="modal-img-gallery">
+            <div class="swiper modal-car-swiper" id="modalCarSwiper">
+              <div class="swiper-wrapper" id="modalSwiperWrap"></div>
+              <button class="modal-swiper-prev" id="modalSwiperPrev">&#8249;</button>
+              <button class="modal-swiper-next" id="modalSwiperNext">&#8250;</button>
+              <div class="modal-swiper-dots" id="modalSwiperDots"></div>
+            </div>
+            <div class="modal-thumb-row" id="modalThumbs"></div>
+          </div>
           <div class="modal-specs-grid" id="modalSpecs"></div>
         </div>
         <div>
@@ -1167,13 +1202,18 @@ function renderCarGrid() {
     const imgSrc = car.primary_image || fallback;
     const el = document.createElement('div');
     el.className = 'car-card';
+    el.dataset.carid = car.id;
     const badgeClass = car.badge === 'New' ? 'new-badge' : car.badge === 'Premium' ? 'premium-badge' : '';
     el.innerHTML = `
-      <div class="car-img" onclick="openCarModal(${car.id})">
-        <img src="${imgSrc}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'" loading="lazy">
+      <div class="car-img" id="cimg-${car.id}" onclick="openCarModal(${car.id})">
+        <img class="main-slide-img active" src="${imgSrc}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'" loading="lazy">
         ${car.badge ? `<span class="car-badge ${badgeClass}">${car.badge}</span>` : ''}
         <div class="car-fav" onclick="event.stopPropagation();this.innerHTML=this.innerHTML==='♡'?'♥':'♡';this.style.color=this.innerHTML==='♥'?'var(--gold)':''">♡</div>
         <div class="car-img-overlay"><span class="overlay-cta">View Details</span></div>
+        <div class="card-slide-dots" id="csdots-${car.id}"></div>
+        <div class="card-img-count" id="ccount-${car.id}">1 / 1</div>
+        <button class="card-slide-btn card-slide-prev" onclick="event.stopPropagation();cardSlideMove(${car.id},-1)" title="Previous">&#8249;</button>
+        <button class="card-slide-btn card-slide-next" onclick="event.stopPropagation();cardSlideMove(${car.id},1)" title="Next">&#8250;</button>
       </div>
       <div class="car-info">
         <div class="car-make">${car.make}</div>
@@ -1210,6 +1250,8 @@ function renderCarGrid() {
       { opacity:1, y:0, duration:.55, stagger:.08, ease:'power2.out', delay:.05 }
     );
   }
+  // Lazy-load card carousels
+  initCardCarouselsLazy();
 }
 
 function showSkeletons() {
@@ -1235,6 +1277,114 @@ function resetFilters() {
   loadCars();
 }
 
+/* ── CARD IMAGE CAROUSEL ─────────────────────────────────────────── */
+const _cardImgCache = new Map(); // carId -> images[]
+const _cardState    = new Map(); // carId -> {idx, timer, images}
+
+function initCardCarouselsLazy() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const card = entry.target;
+      const id   = parseInt(card.dataset.carid);
+      if (!id || _cardImgCache.has(id)) return;
+      observer.unobserve(card);
+      _loadCardImages(id, card);
+    });
+  }, { rootMargin: '200px' });
+
+  document.querySelectorAll('.car-card[data-carid]').forEach(card => {
+    const id = parseInt(card.dataset.carid);
+    if (_cardImgCache.has(id)) {
+      _setupCardCarousel(id, card, _cardImgCache.get(id));
+    } else {
+      observer.observe(card);
+    }
+  });
+}
+
+async function _loadCardImages(carId, cardEl) {
+  try {
+    const car = await api(`/api/cars/${carId}`);
+    if (!car || !car.images || car.images.length < 2) {
+      _cardImgCache.set(carId, []);
+      return;
+    }
+    _cardImgCache.set(carId, car.images);
+    // Re-find card in case DOM updated
+    const el = cardEl || document.querySelector(`.car-card[data-carid="${carId}"]`);
+    if (el) _setupCardCarousel(carId, el, car.images);
+  } catch(e) {}
+}
+
+function _setupCardCarousel(carId, cardEl, images) {
+  if (!images || images.length < 2) return;
+  cardEl.classList.add('has-multi');
+
+  const imgWrap  = cardEl.querySelector(`#cimg-${carId}`);
+  const dotsEl   = cardEl.querySelector(`#csdots-${carId}`);
+  const countEl  = cardEl.querySelector(`#ccount-${carId}`);
+  const mainImg  = imgWrap ? imgWrap.querySelector('.main-slide-img') : null;
+  if (!imgWrap || !mainImg) return;
+
+  // Pre-create hidden slides — insert right after the first image (before badge/overlay)
+  let insertRef = mainImg;
+  images.forEach((img, i) => {
+    if (i === 0) return; // first already exists as main-slide-img
+    const el = document.createElement('img');
+    el.className = 'main-slide-img';
+    el.src = img.data_url;
+    el.alt = mainImg.alt;
+    insertRef.insertAdjacentElement('afterend', el);
+    insertRef = el;
+  });
+
+  // Dots
+  dotsEl.innerHTML = images.map((_, i) =>
+    `<span class="csdot${i===0?' active':''}"></span>`
+  ).join('');
+  countEl.textContent = `1 / ${images.length}`;
+
+  // State
+  _cardState.set(carId, { idx: 0, timer: null, images });
+
+  // Auto-slide
+  function startAuto() {
+    const st = _cardState.get(carId);
+    if (st.timer) return;
+    st.timer = setInterval(() => cardSlideMove(carId, 1), 3000);
+  }
+  function stopAuto() {
+    const st = _cardState.get(carId);
+    if (st.timer) { clearInterval(st.timer); st.timer = null; }
+  }
+
+  cardEl.addEventListener('mouseenter', startAuto);
+  cardEl.addEventListener('mouseleave', stopAuto);
+  // Start auto immediately
+  startAuto();
+}
+
+function cardSlideMove(carId, dir) {
+  const st = _cardState.get(carId);
+  if (!st) return;
+  const total  = st.images.length;
+  const newIdx = (st.idx + dir + total) % total;
+  const cardEl = document.querySelector(`.car-card[data-carid="${carId}"]`);
+  if (!cardEl) return;
+
+  const slides  = cardEl.querySelectorAll(`#cimg-${carId} .main-slide-img`);
+  const dotsEl  = cardEl.querySelectorAll(`#csdots-${carId} .csdot`);
+  const countEl = cardEl.querySelector(`#ccount-${carId}`);
+
+  slides.forEach((s, i) => s.classList.toggle('active', i === newIdx));
+  dotsEl.forEach((d, i)  => d.classList.toggle('active', i === newIdx));
+  if (countEl) countEl.textContent = `${newIdx + 1} / ${total}`;
+  st.idx = newIdx;
+}
+
+let _modalSwiper = null;
+
 async function openCarModal(id) {
   const car = await api(`/api/cars/${id}`);
   if (!car) return;
@@ -1244,12 +1394,49 @@ async function openCarModal(id) {
   document.getElementById('modalDesc').textContent = car.description || '';
   const fallback = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format';
   const images = car.images && car.images.length ? car.images : [{data_url:fallback,is_primary:1}];
-  const primary = images.find(i=>i.is_primary)||images[0];
-  document.getElementById('modalMainImg').innerHTML = `<img src="${primary.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'">`;
-  const thumbs = document.getElementById('modalThumbs');
-  thumbs.innerHTML = images.length > 1
-    ? images.map((img,i)=>`<div class="modal-thumb ${img.is_primary?'active':''}" onclick="switchModalImg(this,'${img.data_url}')"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`).join('')
+
+  // Build Swiper slides
+  document.getElementById('modalSwiperWrap').innerHTML = images.map((img, i) =>
+    `<div class="swiper-slide"><img src="${img.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'"></div>`
+  ).join('');
+
+  // Dot indicators
+  const dotsWrap = document.getElementById('modalSwiperDots');
+  dotsWrap.innerHTML = images.length > 1
+    ? images.map((_, i) => `<span class="msdot${i===0?' active':''}" onclick="_modalGoTo(${i})"></span>`).join('')
     : '';
+
+  // Thumbnails
+  const thumbsEl = document.getElementById('modalThumbs');
+  thumbsEl.innerHTML = images.length > 1
+    ? images.map((img, i) =>
+        `<div class="modal-thumb${i===0?' active':''}" onclick="_modalGoTo(${i})"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`
+      ).join('')
+    : '';
+
+  // Show/hide nav buttons
+  const showNav = images.length > 1;
+  document.getElementById('modalSwiperPrev').style.display = showNav ? '' : 'none';
+  document.getElementById('modalSwiperNext').style.display = showNav ? '' : 'none';
+
+  // Destroy old swiper instance if exists
+  if (_modalSwiper) { try { _modalSwiper.destroy(true, true); } catch(e) {} _modalSwiper = null; }
+
+  // Init Swiper
+  _modalSwiper = new Swiper('#modalCarSwiper', {
+    loop: images.length > 1,
+    allowTouchMove: true,
+    grabCursor: true,
+    navigation: { prevEl: '#modalSwiperPrev', nextEl: '#modalSwiperNext' },
+    on: {
+      slideChange: function() {
+        const idx = this.realIndex;
+        document.querySelectorAll('#modalSwiperDots .msdot').forEach((d,i) => d.classList.toggle('active', i===idx));
+        document.querySelectorAll('#modalThumbs .modal-thumb').forEach((t,i) => t.classList.toggle('active', i===idx));
+      }
+    }
+  });
+
   document.getElementById('modalSpecs').innerHTML = `
     <div class="spec-item"><div class="key">Year</div><div class="val">${car.year}</div></div>
     <div class="spec-item"><div class="key">Mileage</div><div class="val">${car.mileage||'—'}</div></div>
@@ -1265,10 +1452,11 @@ async function openCarModal(id) {
   document.getElementById('carModal').classList.add('active');
 }
 
-function switchModalImg(el, src) {
-  document.querySelectorAll('.modal-thumb').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('modalMainImg').querySelector('img').src = src;
+function _modalGoTo(idx) {
+  if (!_modalSwiper) return;
+  _modalSwiper.slideToLoop(idx);
+  document.querySelectorAll('#modalSwiperDots .msdot').forEach((d,i) => d.classList.toggle('active', i===idx));
+  document.querySelectorAll('#modalThumbs .modal-thumb').forEach((t,i) => t.classList.toggle('active', i===idx));
 }
 
 async function submitEnquiry() {
