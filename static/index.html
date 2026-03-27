@@ -350,9 +350,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 .modal-main-img{border-radius:4px;overflow:hidden;height:265px;background:#0a0a0a;margin-bottom:8px}
 .modal-main-img img{width:100%;height:100%;object-fit:cover}
 .modal-img-gallery{margin-bottom:4px}
-.modal-car-swiper{border-radius:4px;overflow:hidden;height:300px;background:#0a0a0a;margin-bottom:10px;position:relative}
-.modal-car-swiper .swiper-slide{height:300px;overflow:hidden}
-.modal-car-swiper .swiper-slide img{width:100%;height:300px;object-fit:cover;display:block}
+.modal-car-swiper{border-radius:4px;overflow:hidden;height:320px;background:#0a0a0a;margin-bottom:10px;position:relative}
+.modal-car-swiper .swiper-wrapper{height:320px!important}
+.modal-car-swiper .swiper-slide{height:320px!important;overflow:hidden;position:relative}
+.modal-car-swiper .swiper-slide img{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:cover;object-position:center center;display:block}
 .modal-swiper-prev,.modal-swiper-next{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;cursor:none;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:300;font-family:sans-serif;line-height:1;transition:border-color .2s,color .2s;padding:0;pointer-events:auto}
 .modal-swiper-prev{left:10px}
 .modal-swiper-next{right:10px}
