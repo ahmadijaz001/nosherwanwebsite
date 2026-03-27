@@ -174,14 +174,56 @@ def init_db():
             ('BMW',           'X5 xDrive40d M Sport',       2022, '18,900', 55750, 'SUV',     'Diesel',  'Automatic', 'Mineral White',   '3.0L', 'ML22 BMW', '',         'Immaculate BMW X5 40d M Sport. Panoramic roof, 7 seats, Harman Kardon, laser lights, Pro navigation.'),
             ('Lexus',         'LS 500h F Sport',             2020, '29,700', 45995, 'Saloon',  'Hybrid',  'Automatic', 'Sonic Titanium',  '3.5L', 'VK20 LEX', '',         'Ultra-premium Lexus LS 500h F Sport. Mark Levinson audio, climate seats, executive rear lounge.'),
         ]
+        car_ids = []
         for sc in sample_cars:
-            db.execute(
+            cur = db.execute(
                 "INSERT INTO cars (make,model,year,mileage,price,body_type,fuel,transmission,colour,engine,reg,badge,description) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 sc
             )
+            car_ids.append(cur.lastrowid)
         db.commit()
+
+        # Seed dummy images for each sample car (download from Unsplash CDN)
+        _seed_sample_images(db, car_ids)
+
     db.close()
     print("✅ Database initialised at:", DB_PATH)
+
+
+def _seed_sample_images(db, car_ids):
+    """Download and store 4 car photos per sample car from Unsplash CDN."""
+    import urllib.request as _req
+    PHOTO_SETS = [
+        ['1503376780353-7e6692767b70','1494976388531-d1058494cdd8','1552519507-da3b142c6e3d','1605816988069-b11383b50717'],
+        ['1617531653332-bd46c16f7c6b','1590362891991-d1c64b313f41','1541899481282-d53bffe3c35d','1503376780353-7e6692767b70'],
+        ['1571607388263-1044f9ea01eb','1489824904134-891ab64532f1','1526726538690-5cbf956ae2fd','1555215695-3004980ad54e'],
+        ['1606664515524-ed2f786a0bd6','1614162692292-7ac56d7f7f1e','1552519507-da3b142c6e3d','1617531653332-bd46c16f7c6b'],
+        ['1580274455191-1c62238fa1c3','1555215695-3004980ad54e','1526726538690-5cbf956ae2fd','1583121274602-3e2820c69888'],
+        ['1626668893632-6f3a4466d22f','1606664515524-ed2f786a0bd6','1544636331-e26879cd4d9b','1605816988069-b11383b50717'],
+        ['1558618666-fcd25c85cd64','1541899481282-d53bffe3c35d','1503376780353-7e6692767b70','1552519507-da3b142c6e3d'],
+        ['1571607388263-1044f9ea01eb','1614162692292-7ac56d7f7f1e','1494976388531-d1058494cdd8','1503376780353-7e6692767b70'],
+        ['1590362891991-d1c64b313f41','1617531653332-bd46c16f7c6b','1606664515524-ed2f786a0bd6','1605816988069-b11383b50717'],
+    ]
+    HDRS = {'User-Agent': 'Mozilla/5.0'}
+    BASE = 'https://images.unsplash.com/photo-{id}?w=900&q=72&auto=format&fit=crop'
+    for idx, car_id in enumerate(car_ids):
+        photos = PHOTO_SETS[idx % len(PHOTO_SETS)]
+        for order, pid in enumerate(photos):
+            try:
+                url = BASE.format(id=pid)
+                r = _req.Request(url, headers=HDRS)
+                with _req.urlopen(r, timeout=30) as resp:
+                    raw  = resp.read()
+                    mime = resp.getheader('Content-Type','image/jpeg').split(';')[0].strip()
+                    b64  = base64.b64encode(raw).decode()
+                db.execute(
+                    "INSERT INTO car_images (car_id,image_data,mime_type,is_primary,sort_order) VALUES (?,?,?,?,?)",
+                    (car_id, b64, mime, 1 if order==0 else 0, order)
+                )
+                db.commit()
+                print(f"  ✓ image {order+1}/4 → car {car_id}")
+            except Exception as e:
+                print(f"  ✗ skipped photo {pid}: {e}")
 
 # ─────────────────────────────────────────────
 # AUTH HELPERS

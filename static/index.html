@@ -1427,6 +1427,10 @@ async function openCarModal(id) {
     loop: images.length > 1,
     allowTouchMove: true,
     grabCursor: true,
+    autoplay: images.length > 1
+      ? { delay: 3200, pauseOnMouseEnter: true, disableOnInteraction: false }
+      : false,
+    speed: 600,
     navigation: { prevEl: '#modalSwiperPrev', nextEl: '#modalSwiperNext' },
     on: {
       slideChange: function() {
