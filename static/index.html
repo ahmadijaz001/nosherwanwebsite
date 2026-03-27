@@ -476,19 +476,23 @@ body.light .toggle-track{background:linear-gradient(135deg,#c8e6ff,#7bb8e8)}
 body.light .toggle-thumb{transform:translateX(24px);background:#fff}
 .toggle-icon{line-height:1;font-size:.7rem}
 
-/* ─── HERO VIDEO BACKGROUND ──────────────────────────────────────── */
-.hero-video-bg{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.hero-video-bg iframe{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:100vw;height:56.25vw;   /* 16:9 */
-  min-height:100vh;min-width:177.78vh;
-  pointer-events:none;border:none;
-  opacity:.55;
+/* ─── HERO SLIDESHOW ─────────────────────────────────────────────── */
+.hero-slides{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hero-slide{
+  position:absolute;inset:-8%;
+  background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.8s ease-in-out;
+  animation:kenBurns 14s ease-in-out infinite;
+}
+.hero-slide.active{opacity:.42}
+.hero-slide:nth-child(even){animation-direction:alternate-reverse}
+@keyframes kenBurns{
+  0%{transform:scale(1) translate(0,0)}
+  100%{transform:scale(1.12) translate(-2.5%,-1.5%)}
 }
 .hero-video-overlay{
   position:absolute;inset:0;z-index:1;
-  background:linear-gradient(135deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.38) 55%,rgba(0,0,0,.65) 100%);
+  background:linear-gradient(135deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.48) 60%,rgba(0,0,0,.7) 100%);
 }
 
 /* ─── FEATURED CAROUSEL ───────────────────────────────────────────── */
@@ -643,13 +647,11 @@ body.light .toggle-thumb{transform:translateX(24px);background:#fff}
 
 <!-- ═══ HERO ════════════════════════════════════════════════════════ -->
 <section class="hero" id="home">
-  <div class="hero-video-bg">
-    <iframe
-      src="https://www.youtube.com/embed/Y4DLlC3clPU?autoplay=1&mute=1&loop=1&playlist=Y4DLlC3clPU&start=60&end=240&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&cc_load_policy=0"
-      allow="autoplay; encrypted-media"
-      loading="lazy"
-      title="Background video"
-    ></iframe>
+  <div class="hero-slides" id="heroSlides">
+    <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80&auto=format')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80&auto=format')"></div>
   </div>
   <div class="hero-video-overlay"></div>
   <div class="hero-overlay"></div>
