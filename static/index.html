@@ -658,7 +658,7 @@ body.light .toggle-thumb{transform:translateX(24px);background:#fff}
 <section class="hero" id="home">
   <!-- Video background (place hero.mp4 in the static/ folder) -->
   <div class="hero-video-bg" id="heroBg">
-    <video id="heroVideo" autoplay muted playsinline preload="none"
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
            style="display:none"
            oncanplay="this.style.display='';document.getElementById('heroSlides').style.opacity='0'">
       <source src="/static/hero.mp4" type="video/mp4">
@@ -1800,16 +1800,6 @@ async function loadFeaturedCarousel() {
 
 loadFeaturedCarousel();
 
-// ── HERO VIDEO (trim 1min → 4min, loop) ────────
-(function heroVideoSetup() {
-  const vid = document.getElementById('heroVideo');
-  if (!vid) return;
-  const START = 60, END = 240; // 1:00 → 4:00
-  vid.addEventListener('loadedmetadata', () => { vid.currentTime = START; });
-  vid.addEventListener('timeupdate', () => {
-    if (vid.currentTime >= END) { vid.currentTime = START; vid.play(); }
-  });
-})();
 
 // ── HERO PHOTO SLIDESHOW (fallback) ───────────
 (function heroSlideshow() {
