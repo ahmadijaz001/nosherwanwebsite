@@ -349,18 +349,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 .modal-car-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem}
 .modal-main-img{border-radius:4px;overflow:hidden;height:265px;background:#0a0a0a;margin-bottom:8px}
 .modal-main-img img{width:100%;height:100%;object-fit:cover}
-.modal-img-gallery{margin-bottom:4px}
-.modal-car-swiper{border-radius:4px;overflow:hidden;height:320px;background:#0a0a0a;margin-bottom:10px;position:relative}
-.modal-car-swiper .swiper-wrapper{height:320px!important}
-.modal-car-swiper .swiper-slide{height:320px!important;overflow:hidden;position:relative}
-.modal-car-swiper .swiper-slide img{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:cover;object-position:center center;display:block}
-.modal-swiper-prev,.modal-swiper-next{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;cursor:none;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:300;font-family:sans-serif;line-height:1;transition:border-color .2s,color .2s;padding:0;pointer-events:auto}
-.modal-swiper-prev{left:10px}
-.modal-swiper-next{right:10px}
-.modal-swiper-prev:hover,.modal-swiper-next:hover{border-color:var(--gold);color:var(--gold)}
-.modal-swiper-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5;pointer-events:auto}
-.msdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s ease;flex-shrink:0}
-.msdot.active{background:var(--gold);width:18px;border-radius:3px}
+/* ─── MODAL IMAGE GALLERY ──────────────────────────────────────────── */
+.modal-gallery-wrap{position:relative;height:320px;border-radius:4px;overflow:hidden;background:#0a0a0a;margin-bottom:10px}
+.modal-gallery-track{position:relative;width:100%;height:100%}
+.modal-gal-slide{position:absolute;inset:0;opacity:0;transition:opacity .5s ease;pointer-events:none}
+.modal-gal-slide.active{opacity:1;pointer-events:auto}
+.modal-gal-slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.modal-gal-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-family:sans-serif;font-weight:300;line-height:1;padding:0;transition:border-color .2s,color .2s}
+.modal-gal-btn:hover{border-color:var(--gold);color:var(--gold)}
+.modal-gal-prev{left:10px}
+.modal-gal-next{right:10px}
+.modal-gal-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5}
+.mgdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s ease;flex-shrink:0}
+.mgdot.active{background:var(--gold);width:18px;border-radius:3px}
 .modal-thumb-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
 .modal-thumb{width:62px;height:48px;border-radius:3px;overflow:hidden;cursor:none;border:2px solid transparent;transition:border-color .2s,opacity .2s;opacity:.65}
 .modal-thumb.active,.modal-thumb:hover{border-color:var(--gold);opacity:1}
@@ -1047,15 +1048,13 @@ body.light .toggle-thumb{transform:translateX(24px);background:#fff}
     <div class="modal-body">
       <div class="modal-car-grid">
         <div>
-          <div class="modal-img-gallery">
-            <div class="swiper modal-car-swiper" id="modalCarSwiper">
-              <div class="swiper-wrapper" id="modalSwiperWrap"></div>
-              <button class="modal-swiper-prev" id="modalSwiperPrev">&#8249;</button>
-              <button class="modal-swiper-next" id="modalSwiperNext">&#8250;</button>
-              <div class="modal-swiper-dots" id="modalSwiperDots"></div>
-            </div>
-            <div class="modal-thumb-row" id="modalThumbs"></div>
+          <div class="modal-gallery-wrap" id="modalGalleryWrap">
+            <div class="modal-gallery-track" id="modalGalleryTrack"></div>
+            <button class="modal-gal-btn modal-gal-prev" id="modalGalPrev">&#8249;</button>
+            <button class="modal-gal-btn modal-gal-next" id="modalGalNext">&#8250;</button>
+            <div class="modal-gal-dots" id="modalGalDots"></div>
           </div>
+          <div class="modal-thumb-row" id="modalThumbs"></div>
           <div class="modal-specs-grid" id="modalSpecs"></div>
         </div>
         <div>
@@ -1384,63 +1383,62 @@ function cardSlideMove(carId, dir) {
   st.idx = newIdx;
 }
 
-let _modalSwiper = null;
+/* ── MODAL GALLERY (custom, no Swiper) ───────────────────────────── */
+let _galImages = [], _galIdx = 0, _galTimer = null;
+
+function _galShow(idx) {
+  _galIdx = (idx + _galImages.length) % _galImages.length;
+  document.querySelectorAll('#modalGalleryTrack .modal-gal-slide').forEach((s,i)=>s.classList.toggle('active',i===_galIdx));
+  document.querySelectorAll('#modalGalDots .mgdot').forEach((d,i)=>d.classList.toggle('active',i===_galIdx));
+  document.querySelectorAll('#modalThumbs .modal-thumb').forEach((t,i)=>t.classList.toggle('active',i===_galIdx));
+}
+function _galStartAuto() {
+  _galStopAuto();
+  if (_galImages.length > 1) _galTimer = setInterval(()=>_galShow(_galIdx+1), 3200);
+}
+function _galStopAuto() { if (_galTimer) { clearInterval(_galTimer); _galTimer=null; } }
 
 async function openCarModal(id) {
   const car = await api(`/api/cars/${id}`);
   if (!car) return;
   currentCar = car;
+  const fallback = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format';
+  _galImages = car.images && car.images.length ? car.images : [{data_url:fallback,is_primary:1}];
+  _galIdx = 0;
+  _galStopAuto();
+
   document.getElementById('modalTitle').textContent = `${car.year} ${car.make} ${car.model}`;
   document.getElementById('modalPrice').textContent = `£${Number(car.price).toLocaleString()}`;
   document.getElementById('modalDesc').textContent = car.description || '';
-  const fallback = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format';
-  const images = car.images && car.images.length ? car.images : [{data_url:fallback,is_primary:1}];
 
-  // Build Swiper slides
-  document.getElementById('modalSwiperWrap').innerHTML = images.map((img, i) =>
-    `<div class="swiper-slide"><img src="${img.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'"></div>`
+  // Slides
+  document.getElementById('modalGalleryTrack').innerHTML = _galImages.map((img,i)=>
+    `<div class="modal-gal-slide${i===0?' active':''}"><img src="${img.data_url}" alt="${car.make} ${car.model}" onerror="this.src='${fallback}'"></div>`
   ).join('');
 
-  // Dot indicators
-  const dotsWrap = document.getElementById('modalSwiperDots');
-  dotsWrap.innerHTML = images.length > 1
-    ? images.map((_, i) => `<span class="msdot${i===0?' active':''}" onclick="_modalGoTo(${i})"></span>`).join('')
-    : '';
+  // Dots
+  document.getElementById('modalGalDots').innerHTML = _galImages.length > 1
+    ? _galImages.map((_,i)=>`<span class="mgdot${i===0?' active':''}" onclick="_galShow(${i});_galStopAuto();_galStartAuto()"></span>`).join('') : '';
 
   // Thumbnails
-  const thumbsEl = document.getElementById('modalThumbs');
-  thumbsEl.innerHTML = images.length > 1
-    ? images.map((img, i) =>
-        `<div class="modal-thumb${i===0?' active':''}" onclick="_modalGoTo(${i})"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`
-      ).join('')
-    : '';
+  document.getElementById('modalThumbs').innerHTML = _galImages.length > 1
+    ? _galImages.map((img,i)=>
+        `<div class="modal-thumb${i===0?' active':''}" onclick="_galShow(${i});_galStopAuto();_galStartAuto()"><img src="${img.data_url}" onerror="this.src='${fallback}'"></div>`
+      ).join('') : '';
 
-  // Show/hide nav buttons
-  const showNav = images.length > 1;
-  document.getElementById('modalSwiperPrev').style.display = showNav ? '' : 'none';
-  document.getElementById('modalSwiperNext').style.display = showNav ? '' : 'none';
+  // Nav buttons
+  const hasMany = _galImages.length > 1;
+  const prevBtn = document.getElementById('modalGalPrev');
+  const nextBtn = document.getElementById('modalGalNext');
+  prevBtn.style.display = hasMany ? '' : 'none';
+  nextBtn.style.display = hasMany ? '' : 'none';
+  prevBtn.onclick = ()=>{ _galShow(_galIdx-1); _galStopAuto(); _galStartAuto(); };
+  nextBtn.onclick = ()=>{ _galShow(_galIdx+1); _galStopAuto(); _galStartAuto(); };
 
-  // Destroy old swiper instance if exists
-  if (_modalSwiper) { try { _modalSwiper.destroy(true, true); } catch(e) {} _modalSwiper = null; }
-
-  // Init Swiper
-  _modalSwiper = new Swiper('#modalCarSwiper', {
-    loop: images.length > 1,
-    allowTouchMove: true,
-    grabCursor: true,
-    autoplay: images.length > 1
-      ? { delay: 3200, pauseOnMouseEnter: true, disableOnInteraction: false }
-      : false,
-    speed: 600,
-    navigation: { prevEl: '#modalSwiperPrev', nextEl: '#modalSwiperNext' },
-    on: {
-      slideChange: function() {
-        const idx = this.realIndex;
-        document.querySelectorAll('#modalSwiperDots .msdot').forEach((d,i) => d.classList.toggle('active', i===idx));
-        document.querySelectorAll('#modalThumbs .modal-thumb').forEach((t,i) => t.classList.toggle('active', i===idx));
-      }
-    }
-  });
+  // Pause on hover
+  const wrap = document.getElementById('modalGalleryWrap');
+  wrap.onmouseenter = _galStopAuto;
+  wrap.onmouseleave = _galStartAuto;
 
   document.getElementById('modalSpecs').innerHTML = `
     <div class="spec-item"><div class="key">Year</div><div class="val">${car.year}</div></div>
@@ -1452,16 +1450,10 @@ async function openCarModal(id) {
     <div class="spec-item"><div class="key">Body</div><div class="val">${car.body_type||'—'}</div></div>
     <div class="spec-item"><div class="key">Reg</div><div class="val">${car.reg||'POA'}</div></div>`;
   const waMsg = `Hi! I am interested in the ${car.year} ${car.make} ${car.model} for £${Number(car.price).toLocaleString()} (Reg: ${car.reg||'N/A'}). Is it still available?`;
-  document.getElementById('modalWABtn').onclick = () => openWhatsApp(waMsg);
+  document.getElementById('modalWABtn').onclick = ()=>openWhatsApp(waMsg);
   document.getElementById('enquiryWrap').classList.remove('open');
   document.getElementById('carModal').classList.add('active');
-}
-
-function _modalGoTo(idx) {
-  if (!_modalSwiper) return;
-  _modalSwiper.slideToLoop(idx);
-  document.querySelectorAll('#modalSwiperDots .msdot').forEach((d,i) => d.classList.toggle('active', i===idx));
-  document.querySelectorAll('#modalThumbs .modal-thumb').forEach((t,i) => t.classList.toggle('active', i===idx));
+  _galStartAuto();
 }
 
 async function submitEnquiry() {
