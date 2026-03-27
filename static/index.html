@@ -647,7 +647,7 @@ body.light .toggle-thumb{transform:translateX(24px);background:#fff}
     <iframe
       src="https://www.youtube.com/embed/Y4DLlC3clPU?autoplay=1&mute=1&loop=1&playlist=Y4DLlC3clPU&start=60&end=240&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&cc_load_policy=0"
       allow="autoplay; encrypted-media"
-      allowfullscreen="false"
+      loading="lazy"
       title="Background video"
     ></iframe>
   </div>
@@ -1671,21 +1671,24 @@ animateParticles();
 AOS.init({duration:750,easing:'ease-out-cubic',once:true,offset:55});
 
 // ── GSAP — PAGE LOADER ────────────────────────
-window.addEventListener('load',()=>{
-  setTimeout(()=>{
-    document.getElementById('pageLoader').classList.add('done');
-    // Hero entrance
-    const tl=gsap.timeline({defaults:{ease:'power3.out'}});
-    tl.to('.hero-eyebrow',{opacity:1,x:0,duration:.7})
-      .to('.hero-headline .line-inner',{y:'0%',duration:.85,stagger:.12},'-=.4')
-      .to('.hero-sub',{opacity:1,y:0,duration:.7},'-=.5')
-      .to('.hero-actions',{opacity:1,y:0,duration:.6},'-=.45')
-      .to('.hero-stats',{opacity:1,y:0,duration:.6},'-=.4')
-      .to('.hero-visual',{opacity:.88,x:0,duration:1.1,ease:'power2.out'},'-=.9');
-
-    gsap.set('.hero-visual',{x:50,opacity:0});
-  },1700);
-});
+let _loaderDone = false;
+function _hideLoader() {
+  if (_loaderDone) return;
+  _loaderDone = true;
+  document.getElementById('pageLoader').classList.add('done');
+  const tl = gsap.timeline({defaults:{ease:'power3.out'}});
+  tl.to('.hero-eyebrow',{opacity:1,x:0,duration:.7})
+    .to('.hero-headline .line-inner',{y:'0%',duration:.85,stagger:.12},'-=.4')
+    .to('.hero-sub',{opacity:1,y:0,duration:.7},'-=.5')
+    .to('.hero-actions',{opacity:1,y:0,duration:.6},'-=.45')
+    .to('.hero-stats',{opacity:1,y:0,duration:.6},'-=.4')
+    .to('.hero-visual',{opacity:.88,x:0,duration:1.1,ease:'power2.out'},'-=.9');
+  gsap.set('.hero-visual',{x:50,opacity:0});
+}
+// Hide loader when page is ready — but never wait more than 2.5s
+// (YouTube iframe can block window.load indefinitely)
+window.addEventListener('load', () => setTimeout(_hideLoader, 400));
+setTimeout(_hideLoader, 2500);
 
 // ── GSAP SCROLL NAV ───────────────────────────
 gsap.registerPlugin(ScrollTrigger);
