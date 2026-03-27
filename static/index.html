@@ -49,13 +49,13 @@ button{font-family:var(--font-sans);cursor:none}
 /* ─── CUSTOM CURSOR ───────────────────────────────────────────────── */
 #cursor{
   position:fixed;top:0;left:0;width:8px;height:8px;background:var(--gold);
-  border-radius:50%;pointer-events:none;z-index:99998;
-  transform:translate(-50%,-50%);transition:transform .1s,width .3s,height .3s,background .3s;
+  border-radius:50%;pointer-events:none;z-index:99998;will-change:transform;
+  transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;
 }
 #cursorRing{
   position:fixed;top:0;left:0;width:32px;height:32px;
-  border:1px solid rgba(201,168,76,.5);border-radius:50%;pointer-events:none;z-index:99997;
-  transform:translate(-50%,-50%);transition:transform .18s var(--ease-luxury),width .3s,height .3s,border-color .3s;
+  border:1px solid rgba(201,168,76,.5);border-radius:50%;pointer-events:none;z-index:99997;will-change:transform;
+  transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;
 }
 body:has(a:hover) #cursor,body:has(button:hover) #cursor{width:14px;height:14px;background:var(--gold-light)}
 body:has(a:hover) #cursorRing,body:has(button:hover) #cursorRing{width:44px;height:44px;border-color:var(--gold)}
@@ -337,7 +337,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:64px
 .footer-bottom a{color:var(--muted);transition:color .2s}.footer-bottom a:hover{color:var(--gold)}
 
 /* ─── MODAL ───────────────────────────────────────────────────────── */
-.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{display:flex}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:8px;max-width:840px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
 .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
@@ -1612,12 +1612,12 @@ const cursorRing = document.getElementById('cursorRing');
 let mouseX=0,mouseY=0,ringX=0,ringY=0;
 document.addEventListener('mousemove',e=>{
   mouseX=e.clientX; mouseY=e.clientY;
-  cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px';
+  cursor.style.transform=`translate(${mouseX}px,${mouseY}px) translate(-50%,-50%)`;
 });
 (function animateRing(){
   ringX += (mouseX-ringX)*.12;
   ringY += (mouseY-ringY)*.12;
-  cursorRing.style.left=ringX+'px';cursorRing.style.top=ringY+'px';
+  cursorRing.style.transform=`translate(${ringX}px,${ringY}px) translate(-50%,-50%)`;
   requestAnimationFrame(animateRing);
 })();
 
